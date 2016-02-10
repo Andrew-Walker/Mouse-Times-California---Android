@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="8dp"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
+    android:paddingTop="8dp"
+    android:orientation="vertical"
+    tools:context="com.andrewnwalker.mousetimes_california.ParkSelect">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:text="Choose a park"
+        android:textSize="21sp"
+        android:gravity="center"
+        android:textColor="#FF2F92"
+        android:id="@+id/titleTextView1"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Discover wait times, ride info, and more!"
+        android:textSize="17sp"
+        android:gravity="center"
+        android:id="@+id/titleTextView2"
+        android:layout_marginBottom="8dp"
+        android:textColor="#7F7F7F" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="Disneyland Park\n\n1313 Disneyland Drive, Anaheim, CA 92802"
+        android:textColor="#FFFFFF"
+        android:id="@+id/disneylandParkButton"
+        android:background="@drawable/dp1"
+        android:layout_marginBottom="8dp"
+        android:onClick="openPark"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="California Adventure\n\n1313 Disneyland Drive, Anaheim, CA 92802"
+        android:textColor="#FFFFFF"
+        android:id="@+id/californiaAdventureButton"
+        android:background="@drawable/ca1"
+        android:onClick="openPark"/>
+</LinearLayout>

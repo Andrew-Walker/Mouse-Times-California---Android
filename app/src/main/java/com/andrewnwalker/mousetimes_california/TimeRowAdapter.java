@@ -1,0 +1,115 @@
+package com.andrewnwalker.mousetimes_california;
+
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.Color;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+
+/**
+ * Created by andy500mufc on 30/01/2016.
+ */
+public class TimeRowAdapter extends RecyclerView.Adapter<TimeRowHolder> {
+    String[] timesArray = {"Closed", "0m", "5m", "10m", "15m", "20m", "25m", "30m", "35m", "40m", "45m", "50m", "55m", "60m", "65m", "70m", "75m", "80m+"};
+    private Context context;
+    private Attraction currentAttraction;
+    private Park currentPark;
+
+    public TimeRowAdapter(Context context, Park currentPark, Attraction currentAttraction) {
+        this.context = context;
+        this.currentAttraction = currentAttraction;
+        this.currentPark = currentPark;
+    }
+
+    @Override
+    public int getItemCount() {
+        return (currentAttraction.hasWaitTime ? timesArray.length : 2);
+    }
+
+    @Override
+    public void onBindViewHolder(TimeRowHolder holder, int position) {
+        final String waitTime = timesArray[position];
+
+        TimeRowHolder mainHolder = (TimeRowHolder) holder;
+
+        if (position == 0) {
+            mainHolder.title.setText(waitTime);
+            mainHolder.title.setBackgroundColor(Color.parseColor("#FF571D"));
+        } else if (!currentAttraction.hasWaitTime) {
+            mainHolder.title.setText("Open");
+            mainHolder.title.setBackgroundColor(Color.parseColor("#00FA2E"));
+        } else {
+            mainHolder.title.setText(waitTime);
+        }
+    }
+
+    @Override
+    public TimeRowHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.time_item, null);
+        final TimeRowHolder holder = new TimeRowHolder(v);
+
+        holder.title.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final int position = holder.getAdapterPosition();
+
+                final String timeSelected = timesArray[position];
+                String timeSelectedValid = timeSelected.replaceAll("[^\\d]", "");
+
+                if (position == 0) {
+                    timeSelectedValid = "Closed";
+                } else if (position == 1 && !currentAttraction.hasWaitTime) {
+                    timeSelectedValid = "Open";
+                }
+
+                final String finalTimeSelected = timeSelectedValid;
+
+                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+
+                alertDialogBuilder.setTitle("Submit Time");
+                alertDialogBuilder.setMessage("Are you sure you want to submit a time of " + timeSelectedValid + " minutes? Please only submit times that are accurate!");
+                alertDialogBuilder.setPositiveButton("I'm sure", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        sendUpdateToParse(finalTimeSelected);
+                    }
+                });
+                alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+            }
+        });
+
+        return holder;
+    }
+
+    private void sendUpdateToParse(final String timeSelected) {
+        ParseQuery query = new ParseQuery(currentPark.name.replaceAll("\\s+",""));
+        query.whereEqualTo("Name", currentAttraction.name);
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            public void done(ParseObject object, ParseException e) {
+                if (object == null) {
+                    Log.d("update", "The getFirst request failed.");
+                } else {
+                    Log.d("update", "Retrieved the object.");
+
+                    object.put("WaitTime", timeSelected);
+                    object.saveInBackground();
+                }
+            }
+        });
+    }
+}
