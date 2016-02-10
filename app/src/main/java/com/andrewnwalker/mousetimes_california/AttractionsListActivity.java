@@ -30,29 +30,24 @@ public class AttractionsListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_attractions_list);
 
-        setupRecycler();
-        setupImageLoader();
 
         final Intent intent = getIntent();
         parkPassed = intent.getParcelableExtra("parkPassed");
         DataManager.loadAttractions(getBaseContext(), parkPassed.name.replaceAll("\\s+",""));
 
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
-        // Setup refresh listener which triggers new data loading
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                // Your code to refresh the list here.
-                // Make sure you call swipeContainer.setRefreshing(false)
-                // once the network request has completed successfully.
-
                 DataManager.loadAttractions(getBaseContext(), parkPassed.name.replaceAll("\\s+",""));
                 adapter.clearAdaptor();
             }
         });
-        // Configure the refreshing colors
         swipeContainer.setColorSchemeColors(Color.parseColor("#FF2F92"),
                 Color.parseColor("#0080FF"));
+
+        this.setupRecycler();
+        this.setupImageLoader();
     }
 
     private void setupRecycler() {

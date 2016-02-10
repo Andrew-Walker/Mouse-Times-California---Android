@@ -32,8 +32,7 @@
                 android:layout_marginRight="8dp"
                 android:layout_marginBottom="8dp"
                 android:id="@+id/starButton"
-                android:background="@drawable/star"
-                android:onClick="addFavourite"/>
+                android:background="@drawable/star" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -137,6 +136,7 @@
                     android:textColor="#FF9400"
                     android:gravity="center"
                     android:layout_marginRight="8dp"
+                    android:id="@+id/timerTextView"
                     android:background="@drawable/timer_container"/>
 
                 <Button

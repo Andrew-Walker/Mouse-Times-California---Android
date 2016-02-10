@@ -4,8 +4,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -36,6 +37,7 @@ import org.joda.time.Interval;
 import org.joda.time.Period;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class DetailActivity extends AppCompatActivity {
     private Park currentPark;
@@ -51,21 +53,44 @@ public class DetailActivity extends AppCompatActivity {
         currentAttraction = intent.getParcelableExtra("currentAttraction");
         currentPark = intent.getParcelableExtra("currentPark");
 
-        final ImageView tv = (ImageView)findViewById(R.id.headerImageView);
-        ViewTreeObserver vto = tv.getViewTreeObserver();
-        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                setupIconLayout();
+        final TextView tv = (TextView) findViewById( R.id.timerTextView );
+        new CountDownTimer(30000, 1000) { // adjust the milli seconds here
 
-                ViewTreeObserver obs = tv.getViewTreeObserver();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    obs.removeOnGlobalLayoutListener(this);
-                } else {
-                    obs.removeGlobalOnLayoutListener(this);
-                }
+            public void onTick(long millisUntilFinished) {
+                tv.setText(""+String.format("%d min, %d sec",
+                        TimeUnit.MILLISECONDS.toMinutes( millisUntilFinished),
+                        TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) -
+                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))));
             }
-        });
+
+            public void onFinish() {
+                tv.setText("done!");
+            }
+        }.start();
+
+        this.createMap();
+        this.createHeaderImage();
+        this.setupWaitTimes();
+        this.setupIconLayout();
+        this.addListenerOnButton();
+        this.detectLayoutCompletion();
+    }
+
+    private void setupViews() {
+        setTitle("Details");
+
+        TextView attractionNameTextView = (TextView) findViewById(R.id.attractionNameTextView);
+        TextView updatedTextView = (TextView) findViewById(R.id.updatedTextView);
+        TextView waitTimeTextView = (TextView) findViewById(R.id.waitTimeTextView);
+        TextView descriptionTextView = (TextView) findViewById(R.id.descriptionTextView);
+
+        Interval interval = new Interval(currentAttraction.updated, new Instant());
+        Period period = interval.toPeriod();
+
+        attractionNameTextView.setText(currentAttraction.name);
+        updatedTextView.setText(MTString.convertPeriodToString(period));
+        waitTimeTextView.setText(MTString.convertWaitTimeToDisplayWaitTime(currentAttraction.waitTime));
+        descriptionTextView.setText(currentAttraction.attractionDescription);
 
         if (!currentAttraction.hasWaitTime) {
             TextView label = (TextView) findViewById(R.id.howLongLabel);
@@ -88,21 +113,33 @@ public class DetailActivity extends AppCompatActivity {
         int resourceID = this.getResources().getIdentifier(drawableName, null, this.getPackageName());
         Drawable resource = this.getResources().getDrawable(resourceID);
         findViewById(R.id.waitTimeTextView).setBackgroundDrawable(resource);
+    }
 
-        createMap();
-        createHeaderImage();
-        fillTextViews();
-        setupWaitTimes();
-        setupIconLayout();
-        addListenerOnButton();
+    private void detectLayoutCompletion() {
+        final ImageView testView = (ImageView)findViewById(R.id.headerImageView);
+        ViewTreeObserver viewObserver = testView.getViewTreeObserver();
+        viewObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                setupIconLayout();
+                setupViews();
+
+                ViewTreeObserver obs = testView.getViewTreeObserver();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    obs.removeOnGlobalLayoutListener(this);
+                } else {
+                    obs.removeGlobalOnLayoutListener(this);
+                }
+            }
+        });
     }
 
     public void addListenerOnButton() {
-        Button button = (Button) findViewById(R.id.starButton);
+        final Button button = (Button) findViewById(R.id.starButton);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                //Do favourite stuff
+                addFavourite(button);
             }
         });
     }
@@ -166,23 +203,6 @@ public class DetailActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
     }
 
-    private void fillTextViews() {
-        setTitle("Details");
-
-        TextView attractionNameTextView = (TextView) findViewById(R.id.attractionNameTextView);
-        TextView updatedTextView = (TextView) findViewById(R.id.updatedTextView);
-        TextView waitTimeTextView = (TextView) findViewById(R.id.waitTimeTextView);
-        TextView descriptionTextView = (TextView) findViewById(R.id.descriptionTextView);
-
-        Interval interval = new Interval(currentAttraction.updated, new Instant());
-        Period period = interval.toPeriod();
-
-        attractionNameTextView.setText(currentAttraction.name);
-        updatedTextView.setText(MTString.convertPeriodToString(period));
-        waitTimeTextView.setText(MTString.convertWaitTimeToDisplayWaitTime(currentAttraction.waitTime));
-        descriptionTextView.setText(currentAttraction.attractionDescription);
-    }
-
     private void createHeaderImage() {
         DisplayImageOptions options = new DisplayImageOptions.Builder()
                 .cacheInMemory(true)
@@ -227,13 +247,13 @@ public class DetailActivity extends AppCompatActivity {
         attractionMarker.showInfoWindow();
     }
 
-    public void addFavourite(View view) {
+    public void addFavourite(Button button) {
         if (DataManager.favouritesList.contains(currentAttraction.name)) {
             DataManager.favouritesList.remove(currentAttraction.name);
-            view.setBackgroundResource(R.drawable.star);
+            button.setBackgroundResource(R.drawable.star);
         } else {
             DataManager.favouritesList.add(currentAttraction.name);
-            view.setBackgroundResource(R.drawable.star_filled);
+            button.setBackgroundResource(R.drawable.star_filled);
         }
     }
 }

@@ -27,9 +27,6 @@ public class ImageHelper {
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(bitmap, null, rectF, paint);
 
-        /**
-         * here to define your corners, this is for left bottom and right bottom corners
-         */
         final Rect clipRect = new Rect(radius, 0, w, h);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC));
         canvas.drawRect(clipRect, paint);
