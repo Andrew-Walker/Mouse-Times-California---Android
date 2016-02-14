@@ -1,21 +1,23 @@
 package com.andrewnwalker.mousetimes_california;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -42,7 +44,13 @@ import java.util.concurrent.TimeUnit;
 public class DetailActivity extends AppCompatActivity {
     private Park currentPark;
     private Attraction currentAttraction;
-    private static RecyclerView recyclerView;
+    private RecyclerView recyclerView;
+    private CountUpTimer timer;
+    private long timerCount;
+    private Button confirmTimerButton;
+    private Button endTimerButton;
+    private Button startTimerButton;
+    private TextView timerTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,27 +61,41 @@ public class DetailActivity extends AppCompatActivity {
         currentAttraction = intent.getParcelableExtra("currentAttraction");
         currentPark = intent.getParcelableExtra("currentPark");
 
-        final TextView tv = (TextView) findViewById( R.id.timerTextView );
-        new CountDownTimer(30000, 1000) { // adjust the milli seconds here
-
-            public void onTick(long millisUntilFinished) {
-                tv.setText(""+String.format("%d min, %d sec",
-                        TimeUnit.MILLISECONDS.toMinutes( millisUntilFinished),
-                        TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) -
-                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))));
-            }
-
-            public void onFinish() {
-                tv.setText("done!");
-            }
-        }.start();
+        confirmTimerButton = (Button) findViewById(R.id.confirmTimer);
+        endTimerButton = (Button) findViewById(R.id.endTimer);
+        startTimerButton = (Button) findViewById(R.id.startTimer);
 
         this.createMap();
         this.createHeaderImage();
         this.setupWaitTimes();
         this.setupIconLayout();
-        this.addListenerOnButton();
+        this.setupTimer();
+
         this.detectLayoutCompletion();
+
+        this.addFavouritesLister();
+        this.addTimerLister();
+        this.addEndTimerLister();
+        this.addConfirmTimerLister();
+    }
+
+    private void setupTimer() {
+        timerTextView = (TextView) findViewById(R.id.timerTextView);
+        timer = new CountUpTimer(1) {
+            @Override
+            public void onTick(long elapsedTime) {
+                timerCount = elapsedTime;
+                String finalTimer = String.format("%02d:%02d:%02d",
+                        TimeUnit.MILLISECONDS.toHours(elapsedTime),
+                        TimeUnit.MILLISECONDS.toMinutes(elapsedTime),
+                        TimeUnit.MILLISECONDS.toSeconds(elapsedTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(elapsedTime))
+                );
+
+                timerTextView.setText(finalTimer);
+            }
+        };
+
+        timer.stop();
     }
 
     private void setupViews() {
@@ -97,16 +119,16 @@ public class DetailActivity extends AppCompatActivity {
             label.setText("What is the current attraction status?");
 
             TextView timerTextView = (TextView) findViewById(R.id.calculateTextView);
-            RelativeLayout.LayoutParams textViewParams = (RelativeLayout.LayoutParams) timerTextView.getLayoutParams();
-            textViewParams.setMargins(8, 0, 8, 0);
-            textViewParams.height = 0;
-            timerTextView.setLayoutParams(textViewParams);
+            timerTextView.setVisibility(View.GONE);
 
             LinearLayout timerLayout = (LinearLayout) findViewById(R.id.timerLayout);
-            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) timerLayout.getLayoutParams();
-            layoutParams.setMargins(8, 0, 8, 0);
-            layoutParams.height = 0;
-            timerLayout.setLayoutParams(layoutParams);
+            timerLayout.setVisibility(View.GONE);
+        }
+
+        if (currentAttraction.waitTime.equals("Closed") || currentAttraction.waitTime.equals("Open")) {
+            ((TextView) findViewById(R.id.waitTimeTextView)).setTextSize(18);
+        } else {
+            ((TextView) findViewById(R.id.waitTimeTextView)).setTextSize(30);
         }
 
         String drawableName = "@drawable/color" + currentAttraction.waitTime.toLowerCase();
@@ -134,14 +156,161 @@ public class DetailActivity extends AppCompatActivity {
         });
     }
 
-    public void addListenerOnButton() {
-        final Button button = (Button) findViewById(R.id.starButton);
-        button.setOnClickListener(new View.OnClickListener() {
+    private void animateFade() {
+        final AlphaAnimation fadeStartButton = new AlphaAnimation(1.0f, 0.0f);
+        fadeStartButton.setDuration(500);
+        fadeStartButton.setAnimationListener(new Animation.AnimationListener() {
             @Override
-            public void onClick(View arg0) {
-                addFavourite(button);
+            public void onAnimationEnd(Animation arg0) {
+                startTimerButton.setVisibility(View.GONE);
+                confirmTimerButton.setVisibility(View.VISIBLE);
+                endTimerButton.setVisibility(View.VISIBLE);
+
+                final AlphaAnimation fadeControlButtons = new AlphaAnimation(0.0f, 1.0f);
+                fadeControlButtons.setDuration(500);
+                fadeControlButtons.setAnimationListener(new Animation.AnimationListener() {
+                    public void onAnimationEnd(Animation arg0) {
+                    }
+
+                    public void onAnimationStart(Animation a) {
+                    }
+
+                    public void onAnimationRepeat(Animation a) {
+                    }
+                });
+
+                endTimerButton.startAnimation(fadeControlButtons);
+                confirmTimerButton.startAnimation(fadeControlButtons);
+            }
+
+            public void onAnimationStart(Animation a) {
+            }
+
+            public void onAnimationRepeat(Animation a) {
             }
         });
+
+        startTimerButton.startAnimation(fadeStartButton);
+    }
+
+    private void animateAppear() {
+        final AlphaAnimation fadeControlButtons = new AlphaAnimation(1.0f, 0.0f);
+        fadeControlButtons.setDuration(500);
+        fadeControlButtons.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationEnd(Animation arg0) {
+                startTimerButton.setVisibility(View.VISIBLE);
+                confirmTimerButton.setVisibility(View.GONE);
+                endTimerButton.setVisibility(View.GONE);
+
+                timerTextView.setText("00:00:00");
+
+                final AlphaAnimation fadeStartButton = new AlphaAnimation(0.0f, 1.0f);
+                fadeStartButton.setDuration(500);
+                fadeStartButton.setAnimationListener(new Animation.AnimationListener() {
+                    public void onAnimationEnd(Animation arg0) {
+                    }
+
+                    public void onAnimationStart(Animation a) {
+                    }
+
+                    public void onAnimationRepeat(Animation a) {
+                    }
+                });
+
+                startTimerButton.startAnimation(fadeStartButton);
+            }
+
+            public void onAnimationStart(Animation a) {
+            }
+
+            public void onAnimationRepeat(Animation a) {
+            }
+        });
+
+        confirmTimerButton.startAnimation(fadeControlButtons);
+        endTimerButton.startAnimation(fadeControlButtons);
+    }
+
+    private void addFavouritesLister() {
+        final Button starButton = (Button) findViewById(R.id.starButton);
+        starButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                addFavourite(starButton);
+            }
+        });
+    }
+
+    private void addEndTimerLister() {
+        final Button endTimerButton = (Button) findViewById(R.id.endTimer);
+        endTimerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                timer.stop();
+
+                animateAppear();
+            }
+        });
+    }
+
+    private void addConfirmTimerLister() {
+        final Button confirmTimerButton = (Button) findViewById(R.id.confirmTimer);
+        confirmTimerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                timer.stop();
+
+                animateAppear();
+
+                timerCount = 8000000;
+
+                long timerAsMinutes = TimeUnit.MILLISECONDS.toMinutes(timerCount);
+                timerAsMinutes = roundUp(timerAsMinutes);
+
+                if (timerAsMinutes > 80) {
+                    timerAsMinutes = 80;
+                }
+
+                final StringBuilder reducedTimer = new StringBuilder(String.valueOf(timerAsMinutes));
+                if (reducedTimer.charAt(0) == '0' && reducedTimer.length() > 1) {
+                    reducedTimer.deleteCharAt(0);
+                }
+
+                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(DetailActivity.this);
+
+                alertDialogBuilder.setTitle("Submit Time");
+                alertDialogBuilder.setMessage("Are you sure you want to submit a time of " + TimeUnit.MILLISECONDS.toMinutes(timerCount) + " minutes? Please only submit times that are accurate!");
+                alertDialogBuilder.setPositiveButton("I'm sure", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        DataManager.sendUpdateToParse(reducedTimer.toString(), currentPark, currentAttraction);
+                    }
+                });
+                alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+            }
+        });
+    }
+
+    private void addTimerLister() {
+        startTimerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                timer.start();
+
+                animateFade();
+            }
+        });
+    }
+
+    private long roundUp(long n) {
+        return (n + 4) / 5 * 5;
     }
 
     private void setupIconLayout() {
@@ -247,7 +416,7 @@ public class DetailActivity extends AppCompatActivity {
         attractionMarker.showInfoWindow();
     }
 
-    public void addFavourite(Button button) {
+    private void addFavourite(Button button) {
         if (DataManager.favouritesList.contains(currentAttraction.name)) {
             DataManager.favouritesList.remove(currentAttraction.name);
             button.setBackgroundResource(R.drawable.star);

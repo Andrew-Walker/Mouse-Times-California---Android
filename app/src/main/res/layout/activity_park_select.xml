@@ -39,7 +39,8 @@
         android:id="@+id/disneylandParkButton"
         android:background="@drawable/dp1"
         android:layout_marginBottom="8dp"
-        android:onClick="openPark"/>
+        android:onClick="openPark"
+        android:scaleType="centerCrop" />
 
     <Button
         android:layout_width="match_parent"
@@ -49,5 +50,6 @@
         android:textColor="#FFFFFF"
         android:id="@+id/californiaAdventureButton"
         android:background="@drawable/ca1"
-        android:onClick="openPark"/>
+        android:onClick="openPark"
+        android:scaleType="centerCrop" />
 </LinearLayout>

@@ -6,9 +6,11 @@ package com.andrewnwalker.mousetimes_california;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -34,6 +36,8 @@ public class DataManager {
     }
 
     public static void loadAttractions(final Context context, String parkName) {
+        AttractionsListActivity.bar.setVisibility(View.VISIBLE);
+
         ParseQuery<ParseObject> query = ParseQuery.getQuery(parkName.replaceAll("\\s+", ""));
         query.orderByAscending("Name");
         query.findInBackground(new FindCallback<ParseObject>() {
@@ -68,6 +72,7 @@ public class DataManager {
                     }
 
                     AttractionsListActivity.adapter.notifyDataSetChanged();
+                    AttractionsListActivity.bar.setVisibility(View.INVISIBLE);
                     AttractionsListActivity.swipeContainer.setRefreshing(false);
                     Toast.makeText(context, "Attractions updated", Toast.LENGTH_LONG).show();
                 } else {
@@ -84,5 +89,22 @@ public class DataManager {
             }
         }
         return null;
+    }
+
+    public static void sendUpdateToParse(final String timeSelected, Park currentPark, Attraction currentAttraction) {
+        ParseQuery query = new ParseQuery(currentPark.name.replaceAll("\\s+",""));
+        query.whereEqualTo("Name", currentAttraction.name);
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            public void done(ParseObject object, ParseException e) {
+                if (object == null) {
+                    Log.d("update", "The getFirst request failed.");
+                } else {
+                    Log.d("update", "Retrieved the object.");
+
+                    object.put("WaitTime", timeSelected);
+                    object.saveInBackground();
+                }
+            }
+        });
     }
 }

@@ -5,15 +5,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.parse.GetCallback;
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 
 /**
  * Created by andy500mufc on 30/01/2016.
@@ -79,7 +73,7 @@ public class TimeRowAdapter extends RecyclerView.Adapter<TimeRowHolder> {
                 alertDialogBuilder.setMessage("Are you sure you want to submit a time of " + timeSelectedValid + " minutes? Please only submit times that are accurate!");
                 alertDialogBuilder.setPositiveButton("I'm sure", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        sendUpdateToParse(finalTimeSelected);
+                        DataManager.sendUpdateToParse(finalTimeSelected, currentPark, currentAttraction);
                     }
                 });
                 alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -94,22 +88,5 @@ public class TimeRowAdapter extends RecyclerView.Adapter<TimeRowHolder> {
         });
 
         return holder;
-    }
-
-    private void sendUpdateToParse(final String timeSelected) {
-        ParseQuery query = new ParseQuery(currentPark.name.replaceAll("\\s+",""));
-        query.whereEqualTo("Name", currentAttraction.name);
-        query.getFirstInBackground(new GetCallback<ParseObject>() {
-            public void done(ParseObject object, ParseException e) {
-                if (object == null) {
-                    Log.d("update", "The getFirst request failed.");
-                } else {
-                    Log.d("update", "Retrieved the object.");
-
-                    object.put("WaitTime", timeSelected);
-                    object.saveInBackground();
-                }
-            }
-        });
     }
 }

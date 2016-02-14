@@ -83,10 +83,16 @@ public class AttractionRowAdapter extends RecyclerView.Adapter<AttractionRowHold
             attractionRowHolder.fastPassImageView.setVisibility(View.INVISIBLE);
         }
 
+        if (currentAttraction.waitTime.equals("Closed") || currentAttraction.waitTime.equals("Open")) {
+            attractionRowHolder.waitTimeTextView.setTextSize(13);
+        } else {
+            attractionRowHolder.waitTimeTextView.setTextSize(17);
+        }
+
         imageLoader.loadImage(currentAttraction.attractionImageSmall, options, new SimpleImageLoadingListener() {
             @Override
             public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                Bitmap image = ImageHelper.scaleCenterCrop(loadedImage, 156, 156);
+                Bitmap image = ImageHelper.scaleCenterCrop(loadedImage, 140, 140);
                 image = ImageHelper.getRoundCornerBitmap(image, 14);
                 attractionRowHolder.imageView.setImageBitmap(image);
             }
@@ -102,11 +108,19 @@ public class AttractionRowAdapter extends RecyclerView.Adapter<AttractionRowHold
 
     public void clearAdaptor() {
         attractionsList.clear();
+
         notifyDataSetChanged();
     }
 
     @Override
     public int getItemCount() {
         return (null != attractionsList ? attractionsList.size() : 0);
+    }
+
+    public void setFilter(List<Attraction> attractions) {
+        attractionsList.clear();
+        attractionsList.addAll(attractions);
+
+        notifyDataSetChanged();
     }
 }

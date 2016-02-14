@@ -12,6 +12,15 @@ public class ParkSelect extends AppCompatActivity {
         setContentView(R.layout.activity_park_select);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (AttractionsListActivity.adapter != null) {
+            AttractionsListActivity.adapter.clearAdaptor();
+        }
+    }
+
     public void openPark(View view) {
         String parkName = "Disneyland Park";
 

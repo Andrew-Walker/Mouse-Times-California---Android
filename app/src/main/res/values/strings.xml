@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Mouse Times - California</string>
+    <string name="action_search">Search</string>
 </resources>
