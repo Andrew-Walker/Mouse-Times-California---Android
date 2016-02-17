@@ -3,10 +3,12 @@ package com.andrewnwalker.mousetimes_california;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -34,6 +36,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
+import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.joda.time.Interval;
 import org.joda.time.Period;
@@ -303,6 +306,16 @@ public class DetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View arg0) {
                 timer.start();
+
+                DateTime startTime = DateTime.now();
+                long startTimeMilliseconds = startTime.getMillis();
+
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("attractionTimerName", currentAttraction.name);
+                editor.putLong("attractionTimerStart", startTimeMilliseconds);
+                editor.putBoolean("attractionTimerRunning", true);
+                editor.commit();
 
                 animateFade();
             }

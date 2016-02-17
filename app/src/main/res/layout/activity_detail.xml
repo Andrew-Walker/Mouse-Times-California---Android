@@ -143,12 +143,14 @@
                 <Button
                     android:layout_width="110dp"
                     android:layout_height="match_parent"
+                    android:textAllCaps="false"
                     android:text="Start Timer"
                     android:textColor="#FFFFFF"
                     android:background="@drawable/timer_button_container"
                     android:layout_marginLeft="8dp"
                     android:textSize="15sp"
-                    android:id="@+id/startTimer"/>
+                    android:id="@+id/startTimer"
+                    style="?android:attr/borderlessButtonStyle" />
 
                 <Button
                     android:layout_width="39dp"
@@ -160,7 +162,8 @@
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="16dp"
                     android:id="@+id/endTimer"
-                    android:visibility="gone"/>
+                    android:visibility="gone"
+                    style="?android:attr/borderlessButtonStyle"/>
 
                 <Button
                     android:layout_width="39dp"
@@ -171,7 +174,8 @@
                     android:background="@drawable/confirm_timer_container"
                     android:layout_marginLeft="16dp"
                     android:id="@+id/confirmTimer"
-                    android:visibility="gone"/>
+                    android:visibility="gone"
+                    style="?android:attr/borderlessButtonStyle"/>
             </LinearLayout>
 
             <TextView

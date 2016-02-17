@@ -23,6 +23,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingBottom="5dp"
         android:text="Discover wait times, ride info, and more!"
         android:textSize="17sp"
         android:gravity="center"
@@ -30,26 +31,70 @@
         android:layout_marginBottom="8dp"
         android:textColor="#7F7F7F" />
 
-    <Button
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:text="Disneyland Park\n\n1313 Disneyland Drive, Anaheim, CA 92802"
-        android:textColor="#FFFFFF"
+        android:orientation="vertical"
         android:id="@+id/disneylandParkButton"
         android:background="@drawable/dp1"
         android:layout_marginBottom="8dp"
         android:onClick="openPark"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop">
 
-    <Button
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:textSize="17sp"
+            android:textColor="#FFFFFF"
+            android:text="Disneyland Park"
+            android:gravity="bottom"
+            android:paddingBottom="7dp"
+            android:textAlignment="center"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:textSize="12sp"
+            android:textColor="#FFFFFF"
+            android:text="1313 Disneyland Drive,\nAnaheim, CA 92802"
+            android:gravity="top"
+            android:paddingTop="7dp"
+            android:lineSpacingExtra="4dp"
+            android:textAlignment="center"/>
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:text="California Adventure\n\n1313 Disneyland Drive, Anaheim, CA 92802"
-        android:textColor="#FFFFFF"
+        android:orientation="vertical"
         android:id="@+id/californiaAdventureButton"
         android:background="@drawable/ca1"
         android:onClick="openPark"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:textSize="17sp"
+            android:textColor="#FFFFFF"
+            android:text="California Adventure"
+            android:gravity="bottom"
+            android:paddingBottom="7dp"
+            android:textAlignment="center"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:textSize="12sp"
+            android:textColor="#FFFFFF"
+            android:text="1313 Disneyland Drive,\nAnaheim, CA 92802"
+            android:gravity="top"
+            android:paddingTop="7dp"
+            android:lineSpacingExtra="4dp"
+            android:textAlignment="center"/>
+    </LinearLayout>
 </LinearLayout>
