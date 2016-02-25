@@ -77,8 +77,8 @@ public class ParkSelect extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        if (AttractionsListActivity.adapter != null) {
-            AttractionsListActivity.adapter.clearAdaptor();
+        if (AttractionsListActivity.attractionsAdapter != null) {
+            AttractionsListActivity.attractionsAdapter.clearAdaptor();
         }
     }
 

@@ -36,7 +36,7 @@ public class DataManager {
     }
 
     public static void loadAttractions(final Context context, String parkName) {
-        AttractionsListActivity.bar.setVisibility(View.VISIBLE);
+        AttractionsListActivity.progressCircle.setVisibility(View.VISIBLE);
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(parkName.replaceAll("\\s+", ""));
         query.orderByAscending("Name");
@@ -71,9 +71,9 @@ public class DataManager {
                         attractionArrayList.add(newAttraction);
                     }
 
-                    AttractionsListActivity.adapter.notifyDataSetChanged();
-                    AttractionsListActivity.bar.setVisibility(View.INVISIBLE);
-                    AttractionsListActivity.swipeContainer.setRefreshing(false);
+                    AttractionsListActivity.attractionsAdapter.notifyDataSetChanged();
+                    AttractionsListActivity.progressCircle.setVisibility(View.INVISIBLE);
+                    AttractionsListActivity.pullToRefreshLayout.setRefreshing(false);
                     Toast.makeText(context, "Attractions updated", Toast.LENGTH_LONG).show();
                 } else {
                     Log.d("parse", "Failed");

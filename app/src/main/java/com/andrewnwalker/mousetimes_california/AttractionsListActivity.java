@@ -1,16 +1,22 @@
 package com.andrewnwalker.mousetimes_california;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -21,37 +27,102 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AttractionsListActivity extends AppCompatActivity implements SearchView.OnQueryTextListener  {
-    public static AttractionRowAdapter adapter;
-    private RecyclerView mRecyclerView;
-    public static SwipeRefreshLayout swipeContainer;
     public static Park parkPassed;
-    private List<Attraction> attractionsList;
-    public static ProgressBar bar;
+
+    public static AttractionRowAdapter attractionsAdapter;
+    private ArrayAdapter<String> mAdapter;
+
+    public static SwipeRefreshLayout pullToRefreshLayout;
+    public static ProgressBar progressCircle;
+
+    private ActionBarDrawerToggle drawerButton;
+    private ListView drawerList;
+    private DrawerLayout drawerLayout;
+    private String activityTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_attractions_list);
 
-        bar = (ProgressBar) this.findViewById(R.id.progressBar);
+        progressCircle = (ProgressBar) this.findViewById(R.id.progressBar);
 
         final Intent intent = getIntent();
         parkPassed = intent.getParcelableExtra("parkPassed");
         DataManager.loadAttractions(getBaseContext(), parkPassed.name.replaceAll("\\s+",""));
 
-        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        pullToRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        pullToRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 DataManager.loadAttractions(getBaseContext(), parkPassed.name.replaceAll("\\s+", ""));
-                adapter.clearAdaptor();
+                attractionsAdapter.clearAdaptor();
             }
         });
-        swipeContainer.setColorSchemeColors(Color.parseColor("#FF2F92"),
+        pullToRefreshLayout.setColorSchemeColors(Color.parseColor("#FF2F92"),
                 Color.parseColor("#0080FF"));
 
         this.setupRecycler();
         this.setupImageLoader();
+        this.addDrawerItems();
+    }
+
+    private void addDrawerItems() {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+        activityTitle = getTitle().toString();
+        drawerList = (ListView)findViewById(R.id.navList);
+
+        String[] osArray = {"Park Select", "Attractions", "Map", "Favourites"};
+        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
+        drawerList.setAdapter(mAdapter);
+
+        setupDrawer();
+    }
+
+    private void setupDrawer() {
+        drawerButton = new ActionBarDrawerToggle(this, drawerLayout,
+                R.string.drawer_open, R.string.drawer_close) {
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                getSupportActionBar().setTitle("Menu");
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                getSupportActionBar().setTitle(activityTitle);
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+        };
+
+        drawerButton.setDrawerIndicatorEnabled(true);
+        drawerLayout.setDrawerListener(drawerButton);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (drawerButton.onOptionsItemSelected(item)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        drawerButton.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        drawerButton.onConfigurationChanged(newConfig);
     }
 
     @Override
@@ -65,7 +136,7 @@ public class AttractionsListActivity extends AppCompatActivity implements Search
         MenuItemCompat.setOnActionExpandListener(item, new MenuItemCompat.OnActionExpandListener() {
                     @Override
                     public boolean onMenuItemActionCollapse(MenuItem item) {
-                        adapter.setFilter(DataManager.attractionArrayList);
+                        attractionsAdapter.setFilter(DataManager.attractionArrayList);
                         return true;
                     }
 
@@ -81,7 +152,7 @@ public class AttractionsListActivity extends AppCompatActivity implements Search
     @Override
     public boolean onQueryTextChange(String newText) {
         final List<Attraction> filteredModelList = filter(DataManager.attractionArrayList, newText);
-        adapter.setFilter(filteredModelList);
+        attractionsAdapter.setFilter(filteredModelList);
         return true;
     }
 
@@ -104,12 +175,14 @@ public class AttractionsListActivity extends AppCompatActivity implements Search
     }
 
     private void setupRecycler() {
-        mRecyclerView = (RecyclerView) findViewById(R.id.attractions_recycler);
-        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(linearLayoutManager);
+        RecyclerView attractionsRecycler;
 
-        adapter = new AttractionRowAdapter(AttractionsListActivity.this, DataManager.attractionArrayList);
-        mRecyclerView.setAdapter(adapter);
+        attractionsRecycler = (RecyclerView) findViewById(R.id.attractions_recycler);
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        attractionsRecycler.setLayoutManager(linearLayoutManager);
+
+        attractionsAdapter = new AttractionRowAdapter(AttractionsListActivity.this, DataManager.attractionArrayList);
+        attractionsRecycler.setAdapter(attractionsAdapter);
     }
 
     private void setupImageLoader() {
