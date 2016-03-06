@@ -19,6 +19,6 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_below="@+id/toolbar"
-            android:background="#FFFFFF" />
+            android:background="#F2F2F2" />
     </android.support.v4.widget.SwipeRefreshLayout>
 </RelativeLayout>

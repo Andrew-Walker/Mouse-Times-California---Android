@@ -28,6 +28,7 @@ import java.util.List;
 
 public class AttractionsListActivity extends AppCompatActivity implements SearchView.OnQueryTextListener  {
     public static Park parkPassed;
+    private List<Attraction> attractionsList;
 
     public static AttractionRowAdapter attractionsAdapter;
     private ArrayAdapter<String> mAdapter;
@@ -49,13 +50,13 @@ public class AttractionsListActivity extends AppCompatActivity implements Search
 
         final Intent intent = getIntent();
         parkPassed = intent.getParcelableExtra("parkPassed");
-        DataManager.loadAttractions(getBaseContext(), parkPassed.name.replaceAll("\\s+",""));
+        attractionsList = DataManager.loadAttractions(getBaseContext(), parkPassed.name.replaceAll("\\s+",""));
 
         pullToRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
         pullToRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                DataManager.loadAttractions(getBaseContext(), parkPassed.name.replaceAll("\\s+", ""));
+                attractionsList = DataManager.loadAttractions(getBaseContext(), parkPassed.name.replaceAll("\\s+", ""));
                 attractionsAdapter.clearAdaptor();
             }
         });
@@ -74,8 +75,8 @@ public class AttractionsListActivity extends AppCompatActivity implements Search
         activityTitle = getTitle().toString();
         drawerList = (ListView)findViewById(R.id.navList);
 
-        String[] osArray = {"Park Select", "Attractions", "Map", "Favourites"};
-        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
+        String[] drawerItems = {"Park Select", "Attractions", "Map", "Favourites"};
+        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, drawerItems);
         drawerList.setAdapter(mAdapter);
 
         setupDrawer();
@@ -134,24 +135,25 @@ public class AttractionsListActivity extends AppCompatActivity implements Search
         searchView.setOnQueryTextListener(this);
 
         MenuItemCompat.setOnActionExpandListener(item, new MenuItemCompat.OnActionExpandListener() {
-                    @Override
-                    public boolean onMenuItemActionCollapse(MenuItem item) {
-                        attractionsAdapter.setFilter(DataManager.attractionArrayList);
-                        return true;
-                    }
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                attractionsAdapter.setFilter(attractionsList);
 
-                    @Override
-                    public boolean onMenuItemActionExpand(MenuItem item) {
-                        return true;
-                    }
-                });
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                return true;
+            }
+        });
         return super.onCreateOptionsMenu(menu);
     }
 
 
     @Override
     public boolean onQueryTextChange(String newText) {
-        final List<Attraction> filteredModelList = filter(DataManager.attractionArrayList, newText);
+        final List<Attraction> filteredModelList = filter(attractionsList, newText);
         attractionsAdapter.setFilter(filteredModelList);
         return true;
     }
@@ -162,15 +164,14 @@ public class AttractionsListActivity extends AppCompatActivity implements Search
     }
 
     private List<Attraction> filter(List<Attraction> models, String query) {
-        query = query.toLowerCase();
-
-        final List<Attraction> filteredModelList = new ArrayList<>();
+        List<Attraction> filteredModelList = new ArrayList<>();
         for (Attraction model : models) {
             final String text = model.name.toLowerCase();
-            if (text.contains(query)) {
+            if (text.contains(query.toLowerCase())) {
                 filteredModelList.add(model);
             }
         }
+
         return filteredModelList;
     }
 
@@ -181,7 +182,7 @@ public class AttractionsListActivity extends AppCompatActivity implements Search
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         attractionsRecycler.setLayoutManager(linearLayoutManager);
 
-        attractionsAdapter = new AttractionRowAdapter(AttractionsListActivity.this, DataManager.attractionArrayList);
+        attractionsAdapter = new AttractionRowAdapter(AttractionsListActivity.this, DataManager.globalAttractionsList);
         attractionsRecycler.setAdapter(attractionsAdapter);
     }
 

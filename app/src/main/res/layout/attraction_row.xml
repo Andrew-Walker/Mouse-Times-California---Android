@@ -7,7 +7,7 @@
     android:paddingLeft="8dp"
     android:paddingRight="8dp"
     android:id="@+id/rel_layout"
-    android:background="#EEE">
+    android:background="#F2F2F2">
 
     <RelativeLayout android:orientation="horizontal" android:layout_height="match_parent" android:layout_width="match_parent" android:background="@drawable/attraction_row_container">
         <ImageView

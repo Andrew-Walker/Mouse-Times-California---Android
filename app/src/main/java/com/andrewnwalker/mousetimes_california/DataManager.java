@@ -23,19 +23,20 @@ import java.util.Date;
 import java.util.List;
 
 public class DataManager {
-    static ArrayList<Attraction> attractionArrayList = new ArrayList<Attraction>();
-    static ArrayList<Park> parkArrayList = new ArrayList<Park>();
+    static ArrayList<Attraction> globalAttractionsList = new ArrayList<Attraction>();
+    static ArrayList<Park> globalParkList = new ArrayList<Park>();
     static ArrayList<String> favouritesList = new ArrayList<String>();
 
     public static void loadParks() {
         Park disneylandPark = new Park("Disneyland Park", "1313 Disneyland Drive, Anaheim, CA 92802", 33.812067, -117.918981, 0, "http://dlwait.zingled.com/dlp");
-        parkArrayList.add(disneylandPark);
+        globalParkList.add(disneylandPark);
 
         Park californiaAdventure = new Park("California Adventure", "1313 Disneyland Drive, Anaheim, CA 92802", 33.806683, -117.920215, 180, "http://dlwait.zingled.com/dca");
-        parkArrayList.add(californiaAdventure);
+        globalParkList.add(californiaAdventure);
     }
 
-    public static void loadAttractions(final Context context, String parkName) {
+    public static List<Attraction> loadAttractions(final Context context, String parkName) {
+        final ArrayList<Attraction> attractionArrayList = new ArrayList<Attraction>();
         AttractionsListActivity.progressCircle.setVisibility(View.VISIBLE);
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(parkName.replaceAll("\\s+", ""));
@@ -69,6 +70,7 @@ public class DataManager {
                         );
 
                         attractionArrayList.add(newAttraction);
+                        globalAttractionsList.add(newAttraction);
                     }
 
                     AttractionsListActivity.attractionsAdapter.notifyDataSetChanged();
@@ -80,10 +82,12 @@ public class DataManager {
                 }
             }
         });
+
+        return attractionArrayList;
     }
 
     public static Park findParkByName(String parkName) {
-        for(Park park: parkArrayList) {
+        for(Park park: globalParkList) {
             if (park.getName().equals(parkName)) {
                 return park;
             }
@@ -91,7 +95,7 @@ public class DataManager {
         return null;
     }
 
-    public static void sendUpdateToParse(final String timeSelected, Park currentPark, Attraction currentAttraction) {
+    public static void sendUpdateToParse(final Context context, final String timeSelected, Park currentPark, Attraction currentAttraction) {
         ParseQuery query = new ParseQuery(currentPark.name.replaceAll("\\s+",""));
         query.whereEqualTo("Name", currentAttraction.name);
         query.getFirstInBackground(new GetCallback<ParseObject>() {
@@ -99,7 +103,9 @@ public class DataManager {
                 if (object == null) {
                     Log.d("update", "The getFirst request failed.");
                 } else {
-                    Log.d("update", "Retrieved the object.");
+                    if (context instanceof DetailActivity) {
+                        ((DetailActivity) context).setWaitTime(timeSelected);
+                    }
 
                     object.put("WaitTime", timeSelected);
                     object.saveInBackground();

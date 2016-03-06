@@ -50,15 +50,21 @@ public class DetailActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private CountUpTimer timer;
     private long timerCount;
+    private long timerCountDifference;
     private Button confirmTimerButton;
     private Button endTimerButton;
     private Button startTimerButton;
     private TextView timerTextView;
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        editor = sharedPreferences.edit();
 
         Intent intent = getIntent();
         currentAttraction = intent.getParcelableExtra("currentAttraction");
@@ -82,16 +88,33 @@ public class DetailActivity extends AppCompatActivity {
         this.addConfirmTimerLister();
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+
+        String attractionTimerName = sharedPreferences.getString("attractionTimerName", "Fail");
+        Long attractionTimerStart = sharedPreferences.getLong("attractionTimerStart", 0);
+        Boolean attractionTimerRunning = sharedPreferences.getBoolean("attractionTimerRunning", false);
+
+        timerCountDifference = DateTime.now().getMillis() - attractionTimerStart;
+
+        if (attractionTimerName.equals(currentAttraction.name) && attractionTimerRunning) {
+            animateFade();
+            timer.start();
+        }
+    }
+
     private void setupTimer() {
         timerTextView = (TextView) findViewById(R.id.timerTextView);
         timer = new CountUpTimer(1) {
             @Override
             public void onTick(long elapsedTime) {
-                timerCount = elapsedTime;
+                timerCount = elapsedTime + timerCountDifference;
+
                 String finalTimer = String.format("%02d:%02d:%02d",
-                        TimeUnit.MILLISECONDS.toHours(elapsedTime),
-                        TimeUnit.MILLISECONDS.toMinutes(elapsedTime),
-                        TimeUnit.MILLISECONDS.toSeconds(elapsedTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(elapsedTime))
+                        TimeUnit.MILLISECONDS.toHours(timerCount),
+                        TimeUnit.MILLISECONDS.toMinutes(timerCount),
+                        TimeUnit.MILLISECONDS.toSeconds(timerCount) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timerCount))
                 );
 
                 timerTextView.setText(finalTimer);
@@ -106,7 +129,6 @@ public class DetailActivity extends AppCompatActivity {
 
         TextView attractionNameTextView = (TextView) findViewById(R.id.attractionNameTextView);
         TextView updatedTextView = (TextView) findViewById(R.id.updatedTextView);
-        TextView waitTimeTextView = (TextView) findViewById(R.id.waitTimeTextView);
         TextView descriptionTextView = (TextView) findViewById(R.id.descriptionTextView);
 
         Interval interval = new Interval(currentAttraction.updated, new Instant());
@@ -114,7 +136,6 @@ public class DetailActivity extends AppCompatActivity {
 
         attractionNameTextView.setText(currentAttraction.name);
         updatedTextView.setText(MTString.convertPeriodToString(period));
-        waitTimeTextView.setText(MTString.convertWaitTimeToDisplayWaitTime(currentAttraction.waitTime));
         descriptionTextView.setText(currentAttraction.attractionDescription);
 
         if (!currentAttraction.hasWaitTime) {
@@ -128,13 +149,20 @@ public class DetailActivity extends AppCompatActivity {
             timerLayout.setVisibility(View.GONE);
         }
 
-        if (currentAttraction.waitTime.equals("Closed") || currentAttraction.waitTime.equals("Open")) {
+        setWaitTime(currentAttraction.waitTime);
+    }
+
+    public void setWaitTime(String waitTime) {
+        TextView waitTimeTextView = (TextView) findViewById(R.id.waitTimeTextView);
+        waitTimeTextView.setText(MTString.convertWaitTimeToDisplayWaitTime(waitTime));
+
+        if (waitTime.equals("Closed") || waitTime.equals("Open")) {
             ((TextView) findViewById(R.id.waitTimeTextView)).setTextSize(18);
         } else {
             ((TextView) findViewById(R.id.waitTimeTextView)).setTextSize(30);
         }
 
-        String drawableName = "@drawable/color" + currentAttraction.waitTime.toLowerCase();
+        String drawableName = "@drawable/color" + waitTime.toLowerCase();
         int resourceID = this.getResources().getIdentifier(drawableName, null, this.getPackageName());
         Drawable resource = this.getResources().getDrawable(resourceID);
         findViewById(R.id.waitTimeTextView).setBackgroundDrawable(resource);
@@ -252,6 +280,11 @@ public class DetailActivity extends AppCompatActivity {
             public void onClick(View arg0) {
                 timer.stop();
 
+                editor.putString("attractionTimerName", new String());
+                editor.putLong("attractionTimerStart", 0);
+                editor.putBoolean("attractionTimerRunning", false);
+                editor.commit();
+
                 animateAppear();
             }
         });
@@ -265,8 +298,6 @@ public class DetailActivity extends AppCompatActivity {
                 timer.stop();
 
                 animateAppear();
-
-                timerCount = 8000000;
 
                 long timerAsMinutes = TimeUnit.MILLISECONDS.toMinutes(timerCount);
                 timerAsMinutes = roundUp(timerAsMinutes);
@@ -286,7 +317,7 @@ public class DetailActivity extends AppCompatActivity {
                 alertDialogBuilder.setMessage("Are you sure you want to submit a time of " + TimeUnit.MILLISECONDS.toMinutes(timerCount) + " minutes? Please only submit times that are accurate!");
                 alertDialogBuilder.setPositiveButton("I'm sure", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        DataManager.sendUpdateToParse(reducedTimer.toString(), currentPark, currentAttraction);
+                        DataManager.sendUpdateToParse(DetailActivity.this, reducedTimer.toString(), currentPark, currentAttraction);
                     }
                 });
                 alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -305,22 +336,51 @@ public class DetailActivity extends AppCompatActivity {
         startTimerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                timer.start();
+                String attractionTimerName = sharedPreferences.getString("attractionTimerName", "Fail");
+                Boolean attractionTimerRunning = sharedPreferences.getBoolean("attractionTimerRunning", false);
 
-                DateTime startTime = DateTime.now();
-                long startTimeMilliseconds = startTime.getMillis();
+                if (!attractionTimerName.equals(currentAttraction.name) && attractionTimerRunning) {
+                    final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(DetailActivity.this);
 
-                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("attractionTimerName", currentAttraction.name);
-                editor.putLong("attractionTimerStart", startTimeMilliseconds);
-                editor.putBoolean("attractionTimerRunning", true);
-                editor.commit();
+                    alertDialogBuilder.setTitle("Start Timer");
+                    alertDialogBuilder.setMessage("You already have an attraction timer running for '" + attractionTimerName + "'. Are you sure you want to start a new timer?");
+                    alertDialogBuilder.setPositiveButton("I'm sure", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            startTimer();
+                        }
+                    });
+                    alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
 
-                animateFade();
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+                    alertDialog.show();
+                } else {
+                    startTimer();
+                }
             }
         });
     }
+
+    private void startTimer() {
+        timerCountDifference = 0;
+        timerCount = 0;
+
+        timer.start();
+
+        DateTime startTime = DateTime.now();
+        long startTimeMilliseconds = startTime.getMillis();
+
+        editor.putString("attractionTimerName", currentAttraction.name);
+        editor.putLong("attractionTimerStart", startTimeMilliseconds);
+        editor.putBoolean("attractionTimerRunning", true);
+        editor.commit();
+
+        animateFade();
+    }
+
 
     private long roundUp(long n) {
         return (n + 4) / 5 * 5;
@@ -419,6 +479,16 @@ public class DetailActivity extends AppCompatActivity {
         LatLng coordinate = new LatLng(currentAttraction.latitude, currentAttraction.longitude);
         CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(coordinate, 17);
         googleMap.animateCamera(yourLocation);
+
+//        Location locationA = new Location("point A");
+//        locationA.setLatitude(currentAttraction.latitude);
+//        locationA.setLongitude(currentAttraction.longitude);
+//
+//        Location locationB = new Location("point B");
+//        locationB.setLatitude(currentAttraction.latitude);
+//        locationB.setLongitude(currentAttraction.longitude);
+//
+//        float distance = locationA.distanceTo(locationB) ;
 
         Marker attractionMarker = googleMap.addMarker(new MarkerOptions()
                 .position(new LatLng(currentAttraction.latitude, currentAttraction.longitude))

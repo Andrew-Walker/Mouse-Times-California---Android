@@ -73,7 +73,7 @@ public class TimeRowAdapter extends RecyclerView.Adapter<TimeRowHolder> {
                 alertDialogBuilder.setMessage("Are you sure you want to submit a time of " + timeSelectedValid + " minutes? Please only submit times that are accurate!");
                 alertDialogBuilder.setPositiveButton("I'm sure", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        DataManager.sendUpdateToParse(finalTimeSelected, currentPark, currentAttraction);
+                        DataManager.sendUpdateToParse(context, finalTimeSelected, currentPark, currentAttraction);
                     }
                 });
                 alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

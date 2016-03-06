@@ -44,7 +44,7 @@ public class AttractionRowAdapter extends RecyclerView.Adapter<AttractionRowHold
                 final int position = attractionRowHolder.getAdapterPosition();
 
                 Intent intent = new Intent(context, DetailActivity.class);
-                intent.putExtra("currentAttraction", DataManager.attractionArrayList.get(position));
+                intent.putExtra("currentAttraction", DataManager.globalAttractionsList.get(position));
                 intent.putExtra("currentPark", AttractionsListActivity.parkPassed);
                 context.startActivity(intent);
             }
