@@ -37,7 +37,7 @@ public class DataManager {
 
     public static List<Attraction> loadAttractions(final Context context, String parkName) {
         final ArrayList<Attraction> attractionArrayList = new ArrayList<Attraction>();
-        AttractionsListActivity.progressCircle.setVisibility(View.VISIBLE);
+        AttractionsListFragment.progressCircle.setVisibility(View.VISIBLE);
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(parkName.replaceAll("\\s+", ""));
         query.orderByAscending("Name");
@@ -73,9 +73,9 @@ public class DataManager {
                         globalAttractionsList.add(newAttraction);
                     }
 
-                    AttractionsListActivity.attractionsAdapter.notifyDataSetChanged();
-                    AttractionsListActivity.progressCircle.setVisibility(View.INVISIBLE);
-                    AttractionsListActivity.pullToRefreshLayout.setRefreshing(false);
+                    AttractionsListFragment.attractionsAdapter.notifyDataSetChanged();
+                    AttractionsListFragment.progressCircle.setVisibility(View.INVISIBLE);
+                    AttractionsListFragment.pullToRefreshLayout.setRefreshing(false);
                     Toast.makeText(context, "Attractions updated", Toast.LENGTH_LONG).show();
                 } else {
                     Log.d("parse", "Failed");
@@ -88,7 +88,7 @@ public class DataManager {
 
     public static Park findParkByName(String parkName) {
         for(Park park: globalParkList) {
-            if (park.getName().equals(parkName)) {
+            if (park.name.equals(parkName)) {
                 return park;
             }
         }

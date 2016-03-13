@@ -30,12 +30,12 @@ public class Park implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel out, int flags) {
-        out.writeString(name);
-        out.writeString(address);
-        out.writeDouble(latitude);
-        out.writeDouble(longitude);
-        out.writeInt(orientation);
-        out.writeString(dataSource);
+        out.writeString(this.name);
+        out.writeString(this.address);
+        out.writeDouble(this.latitude);
+        out.writeDouble(this.longitude);
+        out.writeInt(this.orientation);
+        out.writeString(this.dataSource);
     }
     
     public static final Creator<Park> CREATOR = new Creator<Park>() {
@@ -49,15 +49,11 @@ public class Park implements Parcelable {
     };
 
     private Park(Parcel in) {
-        name = in.readString();
-        address = in.readString();
-        latitude = in.readDouble();
-        longitude = in.readDouble();
-        orientation = in.readInt();
-        dataSource = in.readString();
-    }
-
-    public String getName() {
-        return name;
+        this.name = in.readString();
+        this.address = in.readString();
+        this.latitude = in.readDouble();
+        this.longitude = in.readDouble();
+        this.orientation = in.readInt();
+        this.dataSource = in.readString();
     }
 }

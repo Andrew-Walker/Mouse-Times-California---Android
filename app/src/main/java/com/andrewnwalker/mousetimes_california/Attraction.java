@@ -27,22 +27,22 @@ public class Attraction implements Parcelable {
     Boolean fastPass;
 
     public Attraction(String retrievedName, String retrievedWaitTime, Double retrievedLongitude, Double retrievedLatitude, DateTime retrievedUpdated, Boolean retrievedDisabledAccess, Boolean retrievedSingleRider, Boolean retrievedHeightRestriction, String retrievedAttractionDescription, Boolean retrievedHasWaitTime, String retrievedAttractionImage, String retrievedAttractionImageSmall, Boolean retrievedMustSee, Boolean retrievedIsLive, String retrievedFastPassReturn, Boolean retrievedFastPass) {
-        name = retrievedName;
-        waitTime = retrievedWaitTime;
-        longitude = retrievedLongitude;
-        latitude = retrievedLatitude;
-        updated = retrievedUpdated;
-        disabledAccess = retrievedDisabledAccess;
-        singleRider = retrievedSingleRider;
-        heightRestriction = retrievedHeightRestriction;
-        attractionDescription = retrievedAttractionDescription;
-        hasWaitTime = retrievedHasWaitTime;
-        attractionImage = retrievedAttractionImage;
-        attractionImageSmall = retrievedAttractionImageSmall;
-        mustSee = retrievedMustSee;
-        isLive = retrievedIsLive;
-        fastPassReturn = retrievedFastPassReturn;
-        fastPass = retrievedFastPass;
+        this.name = retrievedName;
+        this.waitTime = retrievedWaitTime;
+        this.longitude = retrievedLongitude;
+        this.latitude = retrievedLatitude;
+        this.updated = retrievedUpdated;
+        this.disabledAccess = retrievedDisabledAccess;
+        this.singleRider = retrievedSingleRider;
+        this.heightRestriction = retrievedHeightRestriction;
+        this.attractionDescription = retrievedAttractionDescription;
+        this.hasWaitTime = retrievedHasWaitTime;
+        this.attractionImage = retrievedAttractionImage;
+        this.attractionImageSmall = retrievedAttractionImageSmall;
+        this.mustSee = retrievedMustSee;
+        this.isLive = retrievedIsLive;
+        this.fastPassReturn = retrievedFastPassReturn;
+        this.fastPass = retrievedFastPass;
     }
 
     @Override
@@ -52,22 +52,22 @@ public class Attraction implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel out, int flags) {
-        out.writeString(name);
-        out.writeString(waitTime);
-        out.writeDouble(longitude);
-        out.writeDouble(latitude);
-        out.writeSerializable(updated);
-        out.writeInt((byte) (disabledAccess ? 1 : 0));
-        out.writeInt((byte) (singleRider ? 1 : 0));
-        out.writeInt((byte) (heightRestriction ? 1 : 0));
-        out.writeString(attractionDescription);
-        out.writeInt((byte) (hasWaitTime ? 1 : 0));
-        out.writeString(attractionImage);
-        out.writeString(attractionImageSmall);
-        out.writeInt((byte) (mustSee ? 1 : 0));
-        out.writeInt((byte) (isLive ? 1 : 0));
-        out.writeString(fastPassReturn);
-        out.writeInt((byte) (fastPass ? 1 : 0));
+        out.writeString(this.name);
+        out.writeString(this.waitTime);
+        out.writeDouble(this.longitude);
+        out.writeDouble(this.latitude);
+        out.writeSerializable(this.updated);
+        out.writeInt((byte) (this.disabledAccess ? 1 : 0));
+        out.writeInt((byte) (this.singleRider ? 1 : 0));
+        out.writeInt((byte) (this.heightRestriction ? 1 : 0));
+        out.writeString(this.attractionDescription);
+        out.writeInt((byte) (this.hasWaitTime ? 1 : 0));
+        out.writeString(this.attractionImage);
+        out.writeString(this.attractionImageSmall);
+        out.writeInt((byte) (this.mustSee ? 1 : 0));
+        out.writeInt((byte) (this.isLive ? 1 : 0));
+        out.writeString(this.fastPassReturn);
+        out.writeInt((byte) (this.fastPass ? 1 : 0));
     }
 
     public static final Creator<Attraction> CREATOR = new Creator<Attraction>() {
@@ -81,21 +81,21 @@ public class Attraction implements Parcelable {
     };
 
     private Attraction(Parcel in) {
-        name = in.readString();
-        waitTime = in.readString();
-        longitude = in.readDouble();
-        latitude = in.readDouble();
-        updated = (DateTime) in.readSerializable();
-        disabledAccess = in.readByte() != 0;
-        singleRider = in.readByte() != 0;
-        heightRestriction = in.readByte() != 0;
-        attractionDescription = in.readString();
-        hasWaitTime = in.readByte() != 0;
-        attractionImage = in.readString();
-        attractionImageSmall = in.readString();
-        mustSee = in.readByte() != 0;
-        isLive = in.readByte() != 0;
-        fastPassReturn = in.readString();
-        fastPass = in.readByte() != 0;
+        this.name = in.readString();
+        this.waitTime = in.readString();
+        this.longitude = in.readDouble();
+        this.latitude = in.readDouble();
+        this.updated = (DateTime) in.readSerializable();
+        this.disabledAccess = in.readByte() != 0;
+        this.singleRider = in.readByte() != 0;
+        this.heightRestriction = in.readByte() != 0;
+        this.attractionDescription = in.readString();
+        this.hasWaitTime = in.readByte() != 0;
+        this.attractionImage = in.readString();
+        this.attractionImageSmall = in.readString();
+        this.mustSee = in.readByte() != 0;
+        this.isLive = in.readByte() != 0;
+        this.fastPassReturn = in.readString();
+        this.fastPass = in.readByte() != 0;
     }
 }

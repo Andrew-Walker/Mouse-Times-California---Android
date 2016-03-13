@@ -9,30 +9,16 @@
     android:fitsSystemWindows="true"
     tools:context="com.andrewnwalker.mousetimes_california.AttractionsListActivity">
 
-    <android.support.v7.widget.ActionBarContainer
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary" />
-
-    <include layout="@layout/content_main"/>
-
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:visibility="invisible"/>
-    </RelativeLayout>
-
     <ListView
         android:id="@+id/navList"
         android:layout_width="200dp"
         android:layout_height="match_parent"
         android:layout_gravity="left|start"
         android:background="#FFFFFF"/>
+
+    <fragment
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:name="com.andrewnwalker.mousetimes_california.AttractionsListFragment">
+    </fragment>
 </android.support.v4.widget.DrawerLayout>
