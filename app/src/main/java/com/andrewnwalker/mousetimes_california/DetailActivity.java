@@ -500,12 +500,15 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void addFavourite(Button button) {
-        if (DataManager.favouritesList.contains(currentAttraction.name)) {
-            DataManager.favouritesList.remove(currentAttraction.name);
+        if (DataManager.fullFavouritesList.contains(currentAttraction.name)) {
+            DataManager.fullFavouritesList.remove(currentAttraction.name);
             button.setBackgroundResource(R.drawable.star);
         } else {
-            DataManager.favouritesList.add(currentAttraction.name);
+            DataManager.fullFavouritesList.add(currentAttraction.name);
             button.setBackgroundResource(R.drawable.star_filled);
         }
+
+        ArrayHelper arrayHelper = new ArrayHelper(this);
+        arrayHelper.saveArray("favourites", DataManager.fullFavouritesList);
     }
 }

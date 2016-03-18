@@ -13,7 +13,7 @@ import android.view.ViewGroup;
  * Created by andy500mufc on 30/01/2016.
  */
 public class TimeRowAdapter extends RecyclerView.Adapter<TimeRowHolder> {
-    String[] timesArray = {"Closed", "0m", "5m", "10m", "15m", "20m", "25m", "30m", "35m", "40m", "45m", "50m", "55m", "60m", "65m", "70m", "75m", "80m+"};
+    private String[] timesArray = {"Closed", "0m", "5m", "10m", "15m", "20m", "25m", "30m", "35m", "40m", "45m", "50m", "55m", "60m", "65m", "70m", "75m", "80m+"};
     private Context context;
     private Attraction currentAttraction;
     private Park currentPark;
@@ -33,16 +33,14 @@ public class TimeRowAdapter extends RecyclerView.Adapter<TimeRowHolder> {
     public void onBindViewHolder(TimeRowHolder holder, int position) {
         final String waitTime = timesArray[position];
 
-        TimeRowHolder mainHolder = (TimeRowHolder) holder;
-
         if (position == 0) {
-            mainHolder.title.setText(waitTime);
-            mainHolder.title.setBackgroundColor(Color.parseColor("#FF571D"));
+            holder.title.setText(waitTime);
+            holder.title.setBackgroundColor(Color.parseColor("#FF571D"));
         } else if (!currentAttraction.hasWaitTime) {
-            mainHolder.title.setText("Open");
-            mainHolder.title.setBackgroundColor(Color.parseColor("#00FA2E"));
+            holder.title.setText("Open");
+            holder.title.setBackgroundColor(Color.parseColor("#00FA2E"));
         } else {
-            mainHolder.title.setText(waitTime);
+            holder.title.setText(waitTime);
         }
     }
 

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,26 +26,31 @@ import java.util.List;
 public class AttractionRowAdapter extends RecyclerView.Adapter<AttractionRowHolder> {
     private List<Attraction> attractionsList;
     private Context context;
+    private Fragment fragment;
 
-    public AttractionRowAdapter(Context context, List<Attraction> attractionsArrayList) {
+    public AttractionRowAdapter(Context context, Fragment fragment, List<Attraction> attractionsArrayList) {
         this.attractionsList = attractionsArrayList;
+        this.fragment = fragment;
         this.context = context;
     }
 
     @Override
     public AttractionRowHolder onCreateViewHolder(final ViewGroup viewGroup, final int position) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.attraction_row, null);
-        final AttractionRowHolder attractionRowHolder = new AttractionRowHolder(v);
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.attraction_row, null);
+        final AttractionRowHolder attractionRowHolder = new AttractionRowHolder(view);
 
         attractionRowHolder.relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Do stuff when row is tapped
-
                 final int position = attractionRowHolder.getAdapterPosition();
 
                 Intent intent = new Intent(context, DetailActivity.class);
-                intent.putExtra("currentAttraction", DataManager.globalAttractionsList.get(position));
+                if (fragment instanceof AttractionsListFragment) {
+                    intent.putExtra("currentAttraction", DataManager.globalAttractionsList.get(position));
+                } else if (fragment instanceof  FavouritesListFragment) {
+                    intent.putExtra("currentAttraction", DataManager.currentFavouritesList.get(position));
+                }
+
                 intent.putExtra("currentPark", AttractionsListFragment.parkPassed);
                 context.startActivity(intent);
             }

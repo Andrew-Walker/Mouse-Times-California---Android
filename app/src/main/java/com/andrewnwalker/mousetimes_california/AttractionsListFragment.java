@@ -1,10 +1,9 @@
 package com.andrewnwalker.mousetimes_california;
 
-
+import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -25,12 +24,11 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AttractionsListFragment extends Fragment implements SearchView.OnQueryTextListener  {
+public class AttractionsListFragment extends Fragment implements SearchView.OnQueryTextListener {
     public static Park parkPassed;
     private List<Attraction> attractionsList;
-
+    public static Boolean hasContent = false;
     public static AttractionRowAdapter attractionsAdapter;
-
     public static SwipeRefreshLayout pullToRefreshLayout;
     public static ProgressBar progressCircle;
 
@@ -39,35 +37,35 @@ public class AttractionsListFragment extends Fragment implements SearchView.OnQu
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        setHasOptionsMenu(true);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        this.setHasOptionsMenu(true);
 
-        View view = inflater.inflate(R.layout.fragment_attractions_list, container, false);
-
-        return view;
+        return inflater.inflate(R.layout.fragment_attractions_list, container, false);
     }
 
     @Override
     public void onStart(){
         super.onStart();
 
-        progressCircle = (ProgressBar) getActivity().findViewById(R.id.progressBar);
+        this.getActivity().setTitle("Attractions");
+        progressCircle = (ProgressBar) this.getActivity().findViewById(R.id.progressBar);
 
-        final Intent intent = getActivity().getIntent();
+        final Intent intent = this.getActivity().getIntent();
         parkPassed = intent.getParcelableExtra("parkPassed");
-        attractionsList = DataManager.loadAttractions(getActivity().getBaseContext(), parkPassed.name.replaceAll("\\s+", ""));
 
-        pullToRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.swipeContainer);
+        Fragment fragment = AttractionsListFragment.this;
+        this.attractionsList = DataManager.loadAttractions(this.getActivity().getBaseContext(), fragment, parkPassed.name.replaceAll("\\s+", ""), false);
+
+        pullToRefreshLayout = (SwipeRefreshLayout) this.getActivity().findViewById(R.id.swipeContainer);
         pullToRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                attractionsList = DataManager.loadAttractions(getActivity().getBaseContext(), parkPassed.name.replaceAll("\\s+", ""));
+                Fragment fragment = AttractionsListFragment.this;
+                attractionsList = DataManager.loadAttractions(getActivity().getBaseContext(), fragment, parkPassed.name.replaceAll("\\s+", ""), true);
                 attractionsAdapter.clearAdaptor();
             }
         });
-        pullToRefreshLayout.setColorSchemeColors(Color.parseColor("#FF2F92"),
-                Color.parseColor("#0080FF"));
+        pullToRefreshLayout.setColorSchemeColors(Color.parseColor("#FF2F92"), Color.parseColor("#0080FF"));
 
         this.setupRecycler();
         this.setupImageLoader();
@@ -75,7 +73,7 @@ public class AttractionsListFragment extends Fragment implements SearchView.OnQu
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        getActivity().getMenuInflater().inflate(R.menu.action_search, menu);
+        this.getActivity().getMenuInflater().inflate(R.menu.action_search, menu);
 
         final MenuItem item = menu.findItem(R.id.action_search);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
@@ -111,26 +109,27 @@ public class AttractionsListFragment extends Fragment implements SearchView.OnQu
         return false;
     }
 
-    private List<Attraction> filter(List<Attraction> models, String query) {
-        List<Attraction> filteredModelList = new ArrayList<>();
-        for (Attraction model : models) {
-            final String text = model.name.toLowerCase();
+    private List<Attraction> filter(List<Attraction> attractions, String query) {
+        List<Attraction> filteredAttractionsList = new ArrayList<>();
+
+        for (Attraction attraction: attractions) {
+            final String text = attraction.name.toLowerCase();
             if (text.contains(query.toLowerCase())) {
-                filteredModelList.add(model);
+                filteredAttractionsList.add(attraction);
             }
         }
 
-        return filteredModelList;
+        return filteredAttractionsList;
     }
 
     private void setupRecycler() {
         RecyclerView attractionsRecycler;
 
-        attractionsRecycler = (RecyclerView) getActivity().findViewById(R.id.attractions_recycler);
-        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        attractionsRecycler = (RecyclerView) this.getActivity().findViewById(R.id.attractions_recycler);
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getActivity());
         attractionsRecycler.setLayoutManager(linearLayoutManager);
 
-        attractionsAdapter = new AttractionRowAdapter(getActivity(), DataManager.globalAttractionsList);
+        attractionsAdapter = new AttractionRowAdapter(this.getActivity(), AttractionsListFragment.this, DataManager.globalAttractionsList);
         attractionsRecycler.setAdapter(attractionsAdapter);
     }
 
@@ -140,7 +139,7 @@ public class AttractionsListFragment extends Fragment implements SearchView.OnQu
                 .cacheOnDisk(true)
                 .build();
 
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getActivity().getApplicationContext())
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this.getActivity().getApplicationContext())
                 .defaultDisplayImageOptions(defaultOptions)
                 .build();
 

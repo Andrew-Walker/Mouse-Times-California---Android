@@ -15,6 +15,8 @@ public class ParkSelect extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_park_select);
 
+        DataManager.loadParks();
+
         final int[] disneylandParkImages = {
                 R.drawable.dp1,
                 R.drawable.dp2,
@@ -94,11 +96,9 @@ public class ParkSelect extends AppCompatActivity {
                 break;
         }
 
-        DataManager.loadParks();
-
         Park parkSelected = DataManager.findParkByName(parkName);
 
-        Intent intent = new Intent(this, AttractionsListActivity.class);
+        Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("parkPassed", parkSelected);
         startActivity(intent);
     }

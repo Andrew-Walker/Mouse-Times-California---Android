@@ -5,6 +5,7 @@
 package com.andrewnwalker.mousetimes_california;
 
 import android.content.Context;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -23,21 +24,24 @@ import java.util.Date;
 import java.util.List;
 
 public class DataManager {
+    static Toast toast;
     static ArrayList<Attraction> globalAttractionsList = new ArrayList<Attraction>();
     static ArrayList<Park> globalParkList = new ArrayList<Park>();
-    static ArrayList<String> favouritesList = new ArrayList<String>();
+    static ArrayList<String> fullFavouritesList = new ArrayList<String>();
+    static ArrayList<Attraction> currentFavouritesList = new ArrayList<Attraction>();
 
     public static void loadParks() {
-        Park disneylandPark = new Park("Disneyland Park", "1313 Disneyland Drive, Anaheim, CA 92802", 33.812067, -117.918981, 0, "http://dlwait.zingled.com/dlp");
+        Park disneylandPark = new Park("Disneyland Park", "1313 Disneyland Drive,\nAnaheim, CA 92802", 33.812067, -117.918981, 0, "http://dlwait.zingled.com/dlp");
         globalParkList.add(disneylandPark);
 
-        Park californiaAdventure = new Park("California Adventure", "1313 Disneyland Drive, Anaheim, CA 92802", 33.806683, -117.920215, 180, "http://dlwait.zingled.com/dca");
+        Park californiaAdventure = new Park("California Adventure", "1313 Disneyland Drive,\nAnaheim, CA 92802", 33.806683, -117.920215, 180, "http://dlwait.zingled.com/dca");
         globalParkList.add(californiaAdventure);
     }
 
-    public static List<Attraction> loadAttractions(final Context context, String parkName) {
+    public static List<Attraction> loadAttractions(final Context context, final Fragment fragment, String parkName, final Boolean showToast) {
         final ArrayList<Attraction> attractionArrayList = new ArrayList<Attraction>();
-        AttractionsListFragment.progressCircle.setVisibility(View.VISIBLE);
+
+        AttractionsListFragment.progressCircle.setVisibility(AttractionsListFragment.hasContent && fragment instanceof AttractionsListFragment ? View.INVISIBLE : View.VISIBLE);
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(parkName.replaceAll("\\s+", ""));
         query.orderByAscending("Name");
@@ -73,10 +77,24 @@ public class DataManager {
                         globalAttractionsList.add(newAttraction);
                     }
 
-                    AttractionsListFragment.attractionsAdapter.notifyDataSetChanged();
-                    AttractionsListFragment.progressCircle.setVisibility(View.INVISIBLE);
-                    AttractionsListFragment.pullToRefreshLayout.setRefreshing(false);
-                    Toast.makeText(context, "Attractions updated", Toast.LENGTH_LONG).show();
+                    if (fragment instanceof AttractionsListFragment) {
+                        AttractionsListFragment.attractionsAdapter.notifyDataSetChanged();
+                        AttractionsListFragment.progressCircle.setVisibility(View.INVISIBLE);
+                        AttractionsListFragment.pullToRefreshLayout.setRefreshing(false);
+                        AttractionsListFragment.hasContent = true;
+
+                        if (showToast) {
+                            toast = Toast.makeText(context, "Attractions updated", Toast.LENGTH_LONG);
+                            toast.show();
+                        }
+                    } else if (fragment instanceof AttractionsListFragment) {
+                        FavouritesListFragment.pullToRefreshLayout.setRefreshing(false);
+
+                        if (showToast) {
+                            toast = Toast.makeText(context, "Favourites updated", Toast.LENGTH_LONG);
+                            toast.show();
+                        }
+                    }
                 } else {
                     Log.d("parse", "Failed");
                 }
@@ -90,6 +108,15 @@ public class DataManager {
         for(Park park: globalParkList) {
             if (park.name.equals(parkName)) {
                 return park;
+            }
+        }
+        return null;
+    }
+
+    public static Attraction findAttractionByName(String attractionName) {
+        for(Attraction attraction: globalAttractionsList) {
+            if (attraction.name.equals(attractionName)) {
+                return attraction;
             }
         }
         return null;

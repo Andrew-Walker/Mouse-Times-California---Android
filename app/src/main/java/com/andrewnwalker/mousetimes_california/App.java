@@ -16,6 +16,9 @@ public class App extends Application {
         super.onCreate();
         mContext = this;
 
+        ArrayHelper arrayHelper = new ArrayHelper(this);
+        DataManager.fullFavouritesList = arrayHelper.getArray("favourites");
+
         Parse.enableLocalDatastore(this);
         Parse.initialize(this);
     }

@@ -7,7 +7,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.andrewnwalker.mousetimes_california.AttractionsListActivity">
+    tools:context=".MainActivity">
+
+    <FrameLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
     <ListView
         android:id="@+id/navList"
@@ -15,10 +20,4 @@
         android:layout_height="match_parent"
         android:layout_gravity="left|start"
         android:background="#FFFFFF"/>
-
-    <fragment
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:name="com.andrewnwalker.mousetimes_california.AttractionsListFragment">
-    </fragment>
 </android.support.v4.widget.DrawerLayout>
