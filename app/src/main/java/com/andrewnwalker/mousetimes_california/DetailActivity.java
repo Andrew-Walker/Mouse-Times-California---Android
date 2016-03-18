@@ -73,6 +73,12 @@ public class DetailActivity extends AppCompatActivity {
         confirmTimerButton = (Button) findViewById(R.id.detail_confirmTimer);
         endTimerButton = (Button) findViewById(R.id.detail_endTimer);
         startTimerButton = (Button) findViewById(R.id.detail_startTimer);
+        confirmTimerButton = (Button) findViewById(R.id.detail_confirmTimer);
+
+        if (DataManager.fullFavouritesList.contains(currentAttraction.name)) {
+            final Button starButton = (Button) findViewById(R.id.detail_starButton);
+            starButton.setBackgroundResource(R.drawable.star_filled);
+        }
 
         this.createMap();
         this.createHeaderImage();
@@ -113,7 +119,7 @@ public class DetailActivity extends AppCompatActivity {
 
                 String finalTimer = String.format("%02d:%02d:%02d",
                         TimeUnit.MILLISECONDS.toHours(timerCount),
-                        TimeUnit.MILLISECONDS.toMinutes(timerCount),
+                        TimeUnit.MILLISECONDS.toMinutes(timerCount) - (60 * TimeUnit.MILLISECONDS.toHours(timerCount)),
                         TimeUnit.MILLISECONDS.toSeconds(timerCount) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timerCount))
                 );
 

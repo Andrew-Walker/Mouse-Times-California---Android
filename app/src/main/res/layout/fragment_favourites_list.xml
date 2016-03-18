@@ -20,6 +20,7 @@
         android:id="@+id/favouritesListFragment_defaultText"
         android:layout_marginBottom="8dp"
         android:gravity="center"
-        android:visibility="invisible">
+        android:visibility="invisible"
+        android:textSize="17sp">
     </TextView>
 </FrameLayout>

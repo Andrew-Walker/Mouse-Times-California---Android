@@ -38,8 +38,11 @@
             android:text="@string/defaultError"
             android:id="@+id/attractionsListFragment_errorTextView"
             android:layout_marginBottom="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginLeft="8dp"
             android:gravity="center"
-            android:layout_centerInParent="true">
+            android:layout_centerInParent="true"
+            android:textSize="17sp">
         </TextView>
 
         <Button

@@ -24,6 +24,8 @@ import java.util.Date;
 import java.util.List;
 
 public class DataManager {
+    public enum NotificationType { TOAST, BACKGROUND }
+
     static Toast toast;
     static ArrayList<Attraction> globalAttractionsList = new ArrayList<Attraction>();
     static ArrayList<Park> globalParkList = new ArrayList<Park>();
@@ -38,19 +40,22 @@ public class DataManager {
         globalParkList.add(californiaAdventure);
     }
 
-    public static List<Attraction> loadAttractions(final Context context, final Fragment fragment, String parkName, final Boolean showToast) {
+    public static List<Attraction> loadAttractions(final Context context, final Fragment fragment, String parkName) {
         final ArrayList<Attraction> attractionArrayList = new ArrayList<Attraction>();
+        final NotificationType notificationType = AttractionsListFragment.hasContent ? NotificationType.TOAST : NotificationType.BACKGROUND;
 
-        AttractionsListFragment.progressCircle.setVisibility(AttractionsListFragment.hasContent && fragment instanceof AttractionsListFragment ? View.INVISIBLE : View.VISIBLE);
+        AttractionsListFragment.progressCircle.setVisibility((notificationType == NotificationType.BACKGROUND) && fragment instanceof AttractionsListFragment ? View.VISIBLE : View.INVISIBLE);
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(parkName.replaceAll("\\s+", ""));
         query.orderByAscending("Name");
         query.findInBackground(new FindCallback<ParseObject>() {
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null) {
-                    if (fragment instanceof AttractionsListFragment) {
+            public void done(List<ParseObject> objects, ParseException error) {
+                if (error == null) {
+                    if (AttractionsListFragment.attractionsAdapter != null) {
                         AttractionsListFragment.attractionsAdapter.clearAdaptor();
-                    } else if (fragment instanceof FavouritesListFragment) {
+                    }
+
+                    if (FavouritesListFragment.attractionsAdapter != null) {
                         FavouritesListFragment.attractionsAdapter.clearAdaptor();
                     }
 
@@ -83,47 +88,29 @@ public class DataManager {
                         globalAttractionsList.add(newAttraction);
                     }
 
-                    if (fragment instanceof AttractionsListFragment) {
+                    if (AttractionsListFragment.attractionsAdapter != null) {
                         AttractionsListFragment.attractionsAdapter.notifyDataSetChanged();
+                    }
+
+                    if (FavouritesListFragment.attractionsAdapter != null) {
+                        FavouritesListFragment.findFavourites();
+                    }
+
+                    if (fragment instanceof AttractionsListFragment) {
                         AttractionsListFragment.progressCircle.setVisibility(View.INVISIBLE);
                         AttractionsListFragment.pullToRefreshLayout.setRefreshing(false);
                         AttractionsListFragment.hasContent = true;
 
-                        if (showToast) {
-                            toast = Toast.makeText(context, "Attractions updated", Toast.LENGTH_LONG);
-                            toast.show();
-                        }
+                        toast = Toast.makeText(context, "Attractions updated", Toast.LENGTH_LONG);
                     } else if (fragment instanceof FavouritesListFragment) {
                         FavouritesListFragment.pullToRefreshLayout.setRefreshing(false);
-                        FavouritesListFragment.findFavourites();
 
-                        if (showToast) {
-                            toast = Toast.makeText(context, "Favourites updated", Toast.LENGTH_LONG);
-                            toast.show();
-                        }
+                        toast = Toast.makeText(context, "Favourites updated", Toast.LENGTH_LONG);
                     }
+
+                    if (notificationType == NotificationType.TOAST) toast.show();
                 } else {
-                    String errorResponse;
-                    switch (e.getCode()) {
-                        case 1:
-                            errorResponse = "A server error occurred. Please try again later.";
-                            break;
-                        case 100:
-                            errorResponse = "A connection error occurred.";
-                            break;
-                        default:
-                            errorResponse = "An unknown error occurred.";
-                            break;
-                    }
-
-                    if (fragment instanceof AttractionsListFragment) {
-                        AttractionsListFragment.progressCircle.setVisibility(View.INVISIBLE);
-                        AttractionsListFragment.errorLayout.setVisibility(View.VISIBLE);
-                        AttractionsListFragment.pullToRefreshLayout.setRefreshing(false);
-                        AttractionsListFragment.hasContent = false;
-                    } else if (fragment instanceof FavouritesListFragment) {
-                        FavouritesListFragment.pullToRefreshLayout.setRefreshing(false);
-                    }
+                    handleError(context, error, fragment, notificationType);
                 }
             }
         });
@@ -131,20 +118,48 @@ public class DataManager {
         return attractionArrayList;
     }
 
+    public static void handleError(Context context, ParseException error, Fragment fragment, NotificationType notificationType) {
+        String errorResponse;
+        switch (error.getCode()) {
+            case 1:
+                errorResponse = "A server error occurred. Please try again later.";
+                break;
+            case 100:
+                errorResponse = "A connection error occurred.";
+                break;
+            default:
+                errorResponse = "An unknown error occurred.";
+                break;
+        }
+
+        if (fragment instanceof AttractionsListFragment) {
+            AttractionsListFragment.progressCircle.setVisibility(View.INVISIBLE);
+            AttractionsListFragment.pullToRefreshLayout.setRefreshing(false);
+            AttractionsListFragment.errorTextView.setText(errorResponse);
+
+            if (notificationType == NotificationType.BACKGROUND) {
+                AttractionsListFragment.errorLayout.setVisibility(View.VISIBLE);
+                AttractionsListFragment.pullToRefreshLayout.setVisibility(View.GONE);
+            } else if (notificationType == NotificationType.TOAST) {
+                Toast.makeText(context, errorResponse, Toast.LENGTH_LONG).show();
+            }
+        } else if (fragment instanceof FavouritesListFragment) {
+            FavouritesListFragment.pullToRefreshLayout.setRefreshing(false);
+
+            Toast.makeText(context, errorResponse, Toast.LENGTH_LONG).show();
+        }
+    }
+
     public static Park findParkByName(String parkName) {
         for(Park park: globalParkList) {
-            if (park.name.equals(parkName)) {
-                return park;
-            }
+            if (park.name.equals(parkName)) return park;
         }
         return null;
     }
 
     public static Attraction findAttractionByName(String attractionName) {
         for(Attraction attraction: globalAttractionsList) {
-            if (attraction.name.equals(attractionName)) {
-                return attraction;
-            }
+            if (attraction.name.equals(attractionName)) return attraction;
         }
         return null;
     }

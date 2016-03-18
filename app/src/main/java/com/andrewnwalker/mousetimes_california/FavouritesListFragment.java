@@ -56,7 +56,7 @@ public class FavouritesListFragment extends Fragment {
             public void onRefresh() {
                 Fragment fragment = FavouritesListFragment.this;
                 Log.d(parkPassed.name, parkPassed.name);
-                DataManager.loadAttractions(getActivity().getBaseContext(), fragment, parkPassed.name.replaceAll("\\s+", ""), true);
+                DataManager.loadAttractions(getActivity().getBaseContext(), fragment, parkPassed.name.replaceAll("\\s+", ""));
             }
         });
         pullToRefreshLayout.setColorSchemeColors(Color.parseColor("#FF2F92"), Color.parseColor("#0080FF"));

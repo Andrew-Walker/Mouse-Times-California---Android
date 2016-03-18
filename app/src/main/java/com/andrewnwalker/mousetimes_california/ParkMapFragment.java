@@ -17,18 +17,16 @@ public class ParkMapFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        final Intent intent = this.getActivity().getIntent();
+        parkPassed = intent.getParcelableExtra("parkPassed");
+
         return inflater.inflate(R.layout.fragment_map, container, false);
     }
 
     @Override
     public void onStart(){
         super.onStart();
-
-        final Intent intent = this.getActivity().getIntent();
-        parkPassed = intent.getParcelableExtra("parkPassed");
 
         this.getActivity().setTitle("Map");
     }

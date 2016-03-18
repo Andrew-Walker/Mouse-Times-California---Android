@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -34,6 +35,7 @@ public class AttractionsListFragment extends Fragment implements SearchView.OnQu
     public static SwipeRefreshLayout pullToRefreshLayout;
     public static ProgressBar progressCircle;
     public static RelativeLayout errorLayout;
+    public static TextView errorTextView;
 
     public AttractionsListFragment() {
         // Required empty public constructor
@@ -50,15 +52,19 @@ public class AttractionsListFragment extends Fragment implements SearchView.OnQu
     public void onStart(){
         super.onStart();
 
-        this.getActivity().setTitle("Attractions");
-        progressCircle = (ProgressBar) this.getActivity().findViewById(R.id.attractionsListFragment_progressBar);
-        errorLayout = (RelativeLayout) this.getActivity().findViewById(R.id.attractionsListFragment_errorLayout);
-
-        final Intent intent = this.getActivity().getIntent();
-        parkPassed = intent.getParcelableExtra("parkPassed");
-
         Fragment fragment = AttractionsListFragment.this;
-        this.attractionsList = DataManager.loadAttractions(this.getActivity().getBaseContext(), fragment, parkPassed.name.replaceAll("\\s+", ""), false);
+
+        if (!hasContent) {
+            this.getActivity().setTitle("Attractions");
+            progressCircle = (ProgressBar) this.getActivity().findViewById(R.id.attractionsListFragment_progressBar);
+            errorLayout = (RelativeLayout) this.getActivity().findViewById(R.id.attractionsListFragment_errorLayout);
+            errorTextView = (TextView) this.getActivity().findViewById(R.id.attractionsListFragment_errorTextView);
+
+            final Intent intent = this.getActivity().getIntent();
+            parkPassed = intent.getParcelableExtra("parkPassed");
+
+            this.attractionsList = DataManager.loadAttractions(this.getActivity().getBaseContext(), fragment, parkPassed.name.replaceAll("\\s+", ""));
+        }
 
         pullToRefreshLayout = (SwipeRefreshLayout) this.getActivity().findViewById(R.id.contentMain_swipeContainer);
         pullToRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -69,9 +75,9 @@ public class AttractionsListFragment extends Fragment implements SearchView.OnQu
         });
         pullToRefreshLayout.setColorSchemeColors(Color.parseColor("#FF2F92"), Color.parseColor("#0080FF"));
 
-        this.setupRecycler();
         this.setupImageLoader();
         this.addRetryListener();
+        this.setupRecycler();
     }
 
     @Override
@@ -155,14 +161,15 @@ public class AttractionsListFragment extends Fragment implements SearchView.OnQu
             @Override
             public void onClick(View arg0) {
                 reload();
-
-                errorLayout.setVisibility(View.INVISIBLE);
             }
         });
     }
 
     private void reload() {
         Fragment fragment = AttractionsListFragment.this;
-        attractionsList = DataManager.loadAttractions(getActivity().getBaseContext(), fragment, parkPassed.name.replaceAll("\\s+", ""), true);
+        attractionsList = DataManager.loadAttractions(getActivity().getBaseContext(), fragment, parkPassed.name.replaceAll("\\s+", ""));
+
+        errorLayout.setVisibility(View.INVISIBLE);
+        AttractionsListFragment.pullToRefreshLayout.setVisibility(View.VISIBLE);
     }
 }
