@@ -48,6 +48,12 @@ public class DataManager {
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> objects, ParseException e) {
                 if (e == null) {
+                    if (fragment instanceof AttractionsListFragment) {
+                        AttractionsListFragment.attractionsAdapter.clearAdaptor();
+                    } else if (fragment instanceof FavouritesListFragment) {
+                        FavouritesListFragment.attractionsAdapter.clearAdaptor();
+                    }
+
                     for (ParseObject object : objects) {
                         ParseFile imageURL = (ParseFile) object.get("RideImage");
                         ParseFile imageURLSmall = (ParseFile) object.get("RideImageSmall");
@@ -87,8 +93,9 @@ public class DataManager {
                             toast = Toast.makeText(context, "Attractions updated", Toast.LENGTH_LONG);
                             toast.show();
                         }
-                    } else if (fragment instanceof AttractionsListFragment) {
+                    } else if (fragment instanceof FavouritesListFragment) {
                         FavouritesListFragment.pullToRefreshLayout.setRefreshing(false);
+                        FavouritesListFragment.findFavourites();
 
                         if (showToast) {
                             toast = Toast.makeText(context, "Favourites updated", Toast.LENGTH_LONG);
@@ -96,7 +103,27 @@ public class DataManager {
                         }
                     }
                 } else {
-                    Log.d("parse", "Failed");
+                    String errorResponse;
+                    switch (e.getCode()) {
+                        case 1:
+                            errorResponse = "A server error occurred. Please try again later.";
+                            break;
+                        case 100:
+                            errorResponse = "A connection error occurred.";
+                            break;
+                        default:
+                            errorResponse = "An unknown error occurred.";
+                            break;
+                    }
+
+                    if (fragment instanceof AttractionsListFragment) {
+                        AttractionsListFragment.progressCircle.setVisibility(View.INVISIBLE);
+                        AttractionsListFragment.errorLayout.setVisibility(View.VISIBLE);
+                        AttractionsListFragment.pullToRefreshLayout.setRefreshing(false);
+                        AttractionsListFragment.hasContent = false;
+                    } else if (fragment instanceof FavouritesListFragment) {
+                        FavouritesListFragment.pullToRefreshLayout.setRefreshing(false);
+                    }
                 }
             }
         });

@@ -13,6 +13,6 @@ public class TimeRowHolder extends RecyclerView.ViewHolder  {
     public TimeRowHolder(View view) {
         super(view);
 
-        this.title = (TextView) view.findViewById(R.id.title);
+        this.title = (TextView) view.findViewById(R.id.timeItem_title);
     }
 }

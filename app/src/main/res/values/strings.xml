@@ -4,6 +4,28 @@
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="defaultWaitTime">0m</string>
+    <string name="defaultAttractionName">Attraction Name</string>
+    <string name="defaultLastUpdated">Last Updated</string>
+    <string name="defaultTimer">00:00:00</string>
+    <string name="defaultError">A connection error occurred.</string>
+
+    <string name="favouritesDescription">Any attractions you favourite will appear here.</string>
+    <string name="retryButton">Try Again</string>
+    <string name="lastUpdatedImageContentDescription">Last Updated Image</string>
+    <string name="attractionImageContentDescription">Attraction Image</string>
+    <string name="fastPassImageContentDescription">FastPass Availability</string>
+    <string name="disneylandParkName">Disneyland Park</string>
+    <string name="disneylandParkAddress">1313 Disneyland Drive,\nAnaheim, CA 92802</string>
+    <string name="californiaAdventureName">California Adventure</string>
+    <string name="californiaAdventureAddress">1313 Disneyland Drive,\nAnaheim, CA 92802</string>
+    <string name="chooseParkText">Choose a park</string>
+    <string name="chooseParkSubText">Discover wait times, ride info, and more!</string>
+    <string name="howLongText">How long did you wait?</string>
+    <string name="calculateText">Calculate your wait time</string>
+    <string name="startTimer">Start Timer</string>
+    <string name="endTimer">╳</string>
+    <string name="confirmTimer">✓</string>
+    <string name="aboutAttractionText">About the attraction</string>
+    <string name="defaultAttractionDescription">Space Mountain is the name of a space-themed indoor roller coaster attraction located at all five Magic Kingdom-style Disney Parks. Although all five versions of the attraction are different in nature, all have a similar domed exterior façade that is a landmark for the respective park. The first Space Mountain ride opened in 1975 at Walt Disney World Resort in Florida, and similar attractions were then eventually built at the other Disney parks.</string>
 </resources>

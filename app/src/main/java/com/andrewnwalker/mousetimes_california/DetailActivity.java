@@ -70,9 +70,9 @@ public class DetailActivity extends AppCompatActivity {
         currentAttraction = intent.getParcelableExtra("currentAttraction");
         currentPark = intent.getParcelableExtra("currentPark");
 
-        confirmTimerButton = (Button) findViewById(R.id.confirmTimer);
-        endTimerButton = (Button) findViewById(R.id.endTimer);
-        startTimerButton = (Button) findViewById(R.id.startTimer);
+        confirmTimerButton = (Button) findViewById(R.id.detail_confirmTimer);
+        endTimerButton = (Button) findViewById(R.id.detail_endTimer);
+        startTimerButton = (Button) findViewById(R.id.detail_startTimer);
 
         this.createMap();
         this.createHeaderImage();
@@ -105,7 +105,7 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void setupTimer() {
-        timerTextView = (TextView) findViewById(R.id.timerTextView);
+        timerTextView = (TextView) findViewById(R.id.detail_timerTextView);
         timer = new CountUpTimer(1) {
             @Override
             public void onTick(long elapsedTime) {
@@ -127,9 +127,9 @@ public class DetailActivity extends AppCompatActivity {
     private void setupViews() {
         setTitle("Details");
 
-        TextView attractionNameTextView = (TextView) findViewById(R.id.attractionNameTextView);
-        TextView updatedTextView = (TextView) findViewById(R.id.updatedTextView);
-        TextView descriptionTextView = (TextView) findViewById(R.id.descriptionTextView);
+        TextView attractionNameTextView = (TextView) findViewById(R.id.detail_attractionNameTextView);
+        TextView updatedTextView = (TextView) findViewById(R.id.detail_updatedTextView);
+        TextView descriptionTextView = (TextView) findViewById(R.id.detail_descriptionTextView);
 
         Interval interval = new Interval(currentAttraction.updated, new Instant());
         Period period = interval.toPeriod();
@@ -139,13 +139,13 @@ public class DetailActivity extends AppCompatActivity {
         descriptionTextView.setText(currentAttraction.attractionDescription);
 
         if (!currentAttraction.hasWaitTime) {
-            TextView label = (TextView) findViewById(R.id.howLongLabel);
+            TextView label = (TextView) findViewById(R.id.detail_howLongLabel);
             label.setText("What is the current attraction status?");
 
-            TextView timerTextView = (TextView) findViewById(R.id.calculateTextView);
+            TextView timerTextView = (TextView) findViewById(R.id.detail_calculateTextView);
             timerTextView.setVisibility(View.GONE);
 
-            LinearLayout timerLayout = (LinearLayout) findViewById(R.id.timerLayout);
+            LinearLayout timerLayout = (LinearLayout) findViewById(R.id.detail_timerLayout);
             timerLayout.setVisibility(View.GONE);
         }
 
@@ -153,23 +153,23 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     public void setWaitTime(String waitTime) {
-        TextView waitTimeTextView = (TextView) findViewById(R.id.waitTimeTextView);
+        TextView waitTimeTextView = (TextView) findViewById(R.id.detail_waitTimeTextView);
         waitTimeTextView.setText(MTString.convertWaitTimeToDisplayWaitTime(waitTime));
 
         if (waitTime.equals("Closed") || waitTime.equals("Open")) {
-            ((TextView) findViewById(R.id.waitTimeTextView)).setTextSize(18);
+            ((TextView) findViewById(R.id.detail_waitTimeTextView)).setTextSize(18);
         } else {
-            ((TextView) findViewById(R.id.waitTimeTextView)).setTextSize(30);
+            ((TextView) findViewById(R.id.detail_waitTimeTextView)).setTextSize(30);
         }
 
         String drawableName = "@drawable/color" + waitTime.toLowerCase();
         int resourceID = this.getResources().getIdentifier(drawableName, null, this.getPackageName());
         Drawable resource = this.getResources().getDrawable(resourceID);
-        findViewById(R.id.waitTimeTextView).setBackgroundDrawable(resource);
+        findViewById(R.id.detail_waitTimeTextView).setBackgroundDrawable(resource);
     }
 
     private void detectLayoutCompletion() {
-        final ImageView testView = (ImageView)findViewById(R.id.headerImageView);
+        final ImageView testView = (ImageView)findViewById(R.id.detail_headerImageView);
         ViewTreeObserver viewObserver = testView.getViewTreeObserver();
         viewObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -264,7 +264,7 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void addFavouritesLister() {
-        final Button starButton = (Button) findViewById(R.id.starButton);
+        final Button starButton = (Button) findViewById(R.id.detail_starButton);
         starButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
@@ -274,7 +274,7 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void addEndTimerLister() {
-        final Button endTimerButton = (Button) findViewById(R.id.endTimer);
+        final Button endTimerButton = (Button) findViewById(R.id.detail_endTimer);
         endTimerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
@@ -291,7 +291,7 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void addConfirmTimerLister() {
-        final Button confirmTimerButton = (Button) findViewById(R.id.confirmTimer);
+        final Button confirmTimerButton = (Button) findViewById(R.id.detail_confirmTimer);
         confirmTimerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
@@ -409,12 +409,12 @@ public class DetailActivity extends AppCompatActivity {
             icons.add("single_rider");
         }
 
-        LinearLayout iconLayout = (LinearLayout) findViewById(R.id.iconLayout);
+        LinearLayout iconLayout = (LinearLayout) findViewById(R.id.detail_iconLayout);
 
         if (icons.size() > 0) {
             for (int i = 0; i < icons.size(); i++) {
                 ImageView imageView = new ImageView(this);
-                imageView.setLayoutParams(new LinearLayout.LayoutParams(findViewById(R.id.iconLayout).getHeight(), findViewById(R.id.iconLayout).getHeight()));
+                imageView.setLayoutParams(new LinearLayout.LayoutParams(findViewById(R.id.detail_iconLayout).getHeight(), findViewById(R.id.detail_iconLayout).getHeight()));
                 imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 imageView.setPadding(10, 0, 10, 0);
 
@@ -435,7 +435,7 @@ public class DetailActivity extends AppCompatActivity {
     private void setupWaitTimes() {
         HorizontalRecyclerHelper itemDecorator = new HorizontalRecyclerHelper(16);
 
-        recyclerView = (RecyclerView) findViewById(R.id.waitTimesRecyclerView);
+        recyclerView = (RecyclerView) findViewById(R.id.detail_waitTimesRecyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         recyclerView.addItemDecoration(itemDecorator);
@@ -453,7 +453,7 @@ public class DetailActivity extends AppCompatActivity {
                 .displayer(new FadeInBitmapDisplayer(2000))
                 .build();
 
-        final ImageView headerImageView = (ImageView) findViewById(R.id.headerImageView);
+        final ImageView headerImageView = (ImageView) findViewById(R.id.detail_headerImageView);
         headerImageView.setImageResource(R.drawable.unloaded);
 
         final ImageLoader imageLoader;
@@ -468,7 +468,7 @@ public class DetailActivity extends AppCompatActivity {
 
     private void createMap() {
         GoogleMap googleMap;
-        googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+        googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.detail_map)).getMap();
         googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
         googleMap.getUiSettings().setScrollGesturesEnabled(false);
 

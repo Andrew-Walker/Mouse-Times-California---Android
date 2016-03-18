@@ -1,9 +1,9 @@
 package com.andrewnwalker.mousetimes_california;
 
-import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,7 +15,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -31,6 +33,7 @@ public class AttractionsListFragment extends Fragment implements SearchView.OnQu
     public static AttractionRowAdapter attractionsAdapter;
     public static SwipeRefreshLayout pullToRefreshLayout;
     public static ProgressBar progressCircle;
+    public static RelativeLayout errorLayout;
 
     public AttractionsListFragment() {
         // Required empty public constructor
@@ -48,7 +51,8 @@ public class AttractionsListFragment extends Fragment implements SearchView.OnQu
         super.onStart();
 
         this.getActivity().setTitle("Attractions");
-        progressCircle = (ProgressBar) this.getActivity().findViewById(R.id.progressBar);
+        progressCircle = (ProgressBar) this.getActivity().findViewById(R.id.attractionsListFragment_progressBar);
+        errorLayout = (RelativeLayout) this.getActivity().findViewById(R.id.attractionsListFragment_errorLayout);
 
         final Intent intent = this.getActivity().getIntent();
         parkPassed = intent.getParcelableExtra("parkPassed");
@@ -56,19 +60,18 @@ public class AttractionsListFragment extends Fragment implements SearchView.OnQu
         Fragment fragment = AttractionsListFragment.this;
         this.attractionsList = DataManager.loadAttractions(this.getActivity().getBaseContext(), fragment, parkPassed.name.replaceAll("\\s+", ""), false);
 
-        pullToRefreshLayout = (SwipeRefreshLayout) this.getActivity().findViewById(R.id.swipeContainer);
+        pullToRefreshLayout = (SwipeRefreshLayout) this.getActivity().findViewById(R.id.contentMain_swipeContainer);
         pullToRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                Fragment fragment = AttractionsListFragment.this;
-                attractionsList = DataManager.loadAttractions(getActivity().getBaseContext(), fragment, parkPassed.name.replaceAll("\\s+", ""), true);
-                attractionsAdapter.clearAdaptor();
+                reload();
             }
         });
         pullToRefreshLayout.setColorSchemeColors(Color.parseColor("#FF2F92"), Color.parseColor("#0080FF"));
 
         this.setupRecycler();
         this.setupImageLoader();
+        this.addRetryListener();
     }
 
     @Override
@@ -125,7 +128,7 @@ public class AttractionsListFragment extends Fragment implements SearchView.OnQu
     private void setupRecycler() {
         RecyclerView attractionsRecycler;
 
-        attractionsRecycler = (RecyclerView) this.getActivity().findViewById(R.id.attractions_recycler);
+        attractionsRecycler = (RecyclerView) this.getActivity().findViewById(R.id.contentMain_attractionsRecycler);
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getActivity());
         attractionsRecycler.setLayoutManager(linearLayoutManager);
 
@@ -144,5 +147,22 @@ public class AttractionsListFragment extends Fragment implements SearchView.OnQu
                 .build();
 
         ImageLoader.getInstance().init(config);
+    }
+
+    private void addRetryListener() {
+        final Button retryButton = (Button) this.getActivity().findViewById(R.id.attractionsListFragment_retryButton);
+        retryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                reload();
+
+                errorLayout.setVisibility(View.INVISIBLE);
+            }
+        });
+    }
+
+    private void reload() {
+        Fragment fragment = AttractionsListFragment.this;
+        attractionsList = DataManager.loadAttractions(getActivity().getBaseContext(), fragment, parkPassed.name.replaceAll("\\s+", ""), true);
     }
 }

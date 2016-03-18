@@ -12,12 +12,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class FavouritesListFragment extends Fragment {
+    public static TextView backgroundLayout;
     public static Park parkPassed;
     public static AttractionRowAdapter attractionsAdapter;
     public static SwipeRefreshLayout pullToRefreshLayout;
@@ -38,20 +40,23 @@ public class FavouritesListFragment extends Fragment {
         super.onStart();
 
         this.getActivity().setTitle("Favourites");
-        this.findFavourites();
+        this.setupRecycler();
         this.setupImageLoader();
+
+        backgroundLayout = (TextView) this.getActivity().findViewById(R.id.favouritesListFragment_defaultText);
+
+        findFavourites();
 
         final Intent intent = this.getActivity().getIntent();
         parkPassed = intent.getParcelableExtra("parkPassed");
 
-        pullToRefreshLayout = (SwipeRefreshLayout) this.getActivity().findViewById(R.id.swipeContainer);
+        pullToRefreshLayout = (SwipeRefreshLayout) this.getActivity().findViewById(R.id.contentMain_swipeContainer);
         pullToRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 Fragment fragment = FavouritesListFragment.this;
                 Log.d(parkPassed.name, parkPassed.name);
                 DataManager.loadAttractions(getActivity().getBaseContext(), fragment, parkPassed.name.replaceAll("\\s+", ""), true);
-                attractionsAdapter.clearAdaptor();
             }
         });
         pullToRefreshLayout.setColorSchemeColors(Color.parseColor("#FF2F92"), Color.parseColor("#0080FF"));
@@ -59,7 +64,7 @@ public class FavouritesListFragment extends Fragment {
 
     private void setupRecycler() {
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getActivity());
-        RecyclerView attractionsRecycler = (RecyclerView) this.getActivity().findViewById(R.id.attractions_recycler);
+        RecyclerView attractionsRecycler = (RecyclerView) this.getActivity().findViewById(R.id.contentMain_attractionsRecycler);
         attractionsRecycler.setLayoutManager(linearLayoutManager);
 
         attractionsAdapter = new AttractionRowAdapter(this.getActivity(), FavouritesListFragment.this, DataManager.currentFavouritesList);
@@ -79,7 +84,7 @@ public class FavouritesListFragment extends Fragment {
         ImageLoader.getInstance().init(config);
     }
 
-    private void findFavourites() {
+    public static void findFavourites() {
         DataManager.currentFavouritesList.clear();
 
         for (int i = 0; i < DataManager.fullFavouritesList.size(); i++) {
@@ -90,6 +95,8 @@ public class FavouritesListFragment extends Fragment {
             }
         }
 
-        this.setupRecycler();
+        FavouritesListFragment.backgroundLayout.setVisibility(DataManager.currentFavouritesList.size() == 0 ? View.VISIBLE : View.INVISIBLE);
+
+        AttractionsListFragment.attractionsAdapter.notifyDataSetChanged();
     }
 }

@@ -20,12 +20,12 @@ public class AttractionRowHolder extends RecyclerView.ViewHolder {
     public AttractionRowHolder(View view) {
         super(view);
 
-        this.nameTextView = (TextView) view.findViewById(R.id.attractionNameTextView);
-        this.updatedTextView = (TextView) view.findViewById(R.id.updatedTextView);
-        this.relativeLayout = (RelativeLayout) view.findViewById(R.id.rel_layout);
-        this.imageView = (ImageView) view.findViewById(R.id.attractionImageView);
-        this.fastPassImageView = (ImageView) view.findViewById(R.id.fastPassImageView);
-        this.waitTimeTextView = (TextView) view.findViewById(R.id.waitTimeTextView);
+        this.nameTextView = (TextView) view.findViewById(R.id.attractionRow_attractionNameTextView);
+        this.updatedTextView = (TextView) view.findViewById(R.id.attractionRow_updatedTextView);
+        this.relativeLayout = (RelativeLayout) view.findViewById(R.id.attractionRow_relativeLayout);
+        this.imageView = (ImageView) view.findViewById(R.id.attractionRow_attractionImageView);
+        this.fastPassImageView = (ImageView) view.findViewById(R.id.attractionRow_fastPassImageView);
+        this.waitTimeTextView = (TextView) view.findViewById(R.id.attractionRow_waitTimeTextView);
 
         view.setClickable(true);
     }

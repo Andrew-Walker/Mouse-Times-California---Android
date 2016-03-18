@@ -46,8 +46,8 @@ public class TimeRowAdapter extends RecyclerView.Adapter<TimeRowHolder> {
 
     @Override
     public TimeRowHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.time_item, null);
-        final TimeRowHolder holder = new TimeRowHolder(v);
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.time_row, null);
+        final TimeRowHolder holder = new TimeRowHolder(view);
 
         holder.title.setOnClickListener(new View.OnClickListener() {
             @Override

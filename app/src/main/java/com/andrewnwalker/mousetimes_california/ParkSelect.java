@@ -39,8 +39,8 @@ public class ParkSelect extends AppCompatActivity {
                 R.drawable.ca8,
         };
 
-        final LinearLayout disneylandParkButton = (LinearLayout) findViewById(R.id.disneylandParkButton);
-        final LinearLayout californiaAdventureButton = (LinearLayout) findViewById(R.id.californiaAdventureButton);
+        final LinearLayout disneylandParkButton = (LinearLayout) findViewById(R.id.parkSelect_disneylandParkButton);
+        final LinearLayout californiaAdventureButton = (LinearLayout) findViewById(R.id.parkSelect_californiaAdventureButton);
 
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -88,10 +88,10 @@ public class ParkSelect extends AppCompatActivity {
         String parkName = "Disneyland Park";
 
         switch (view.getId()) {
-            case R.id.disneylandParkButton:
+            case R.id.parkSelect_disneylandParkButton:
                 parkName = "Disneyland Park";
                 break;
-            case R.id.californiaAdventureButton:
+            case R.id.parkSelect_californiaAdventureButton:
                 parkName = "California Adventure";
                 break;
         }

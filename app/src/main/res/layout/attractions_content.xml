@@ -5,15 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.andrewnwalker.mousetimes_california.MainActivity"
-    tools:showIn="@layout/activity_attractions_list">
+    tools:showIn="@layout/activity_main">
 
     <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/swipeContainer"
+        android:id="@+id/contentMain_swipeContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/attractions_recycler"
+            android:id="@+id/contentMain_attractionsRecycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentLeft="true"

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -5,23 +6,54 @@
     tools:context="com.andrewnwalker.mousetimes_california.AttractionsListFragment">
 
     <android.support.v7.widget.ActionBarContainer
-        android:id="@+id/toolbar"
+        android:id="@+id/attractionsListFragment_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary" />
 
-    <include layout="@layout/content_main"/>
+    <include layout="@layout/attractions_content"/>
 
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
 
         <ProgressBar
-            android:id="@+id/progressBar"
+            android:id="@+id/attractionsListFragment_progressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:visibility="invisible"/>
     </RelativeLayout>
 
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        android:id="@+id/attractionsListFragment_errorLayout"
+        android:visibility="invisible">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="39dp"
+            android:text="@string/defaultError"
+            android:id="@+id/attractionsListFragment_errorTextView"
+            android:layout_marginBottom="8dp"
+            android:gravity="center"
+            android:layout_centerInParent="true">
+        </TextView>
+
+        <Button
+            android:layout_width="110dp"
+            android:layout_height="39dp"
+            android:background="@drawable/retry_button_container"
+            android:text="@string/retryButton"
+            android:layout_below="@id/attractionsListFragment_errorTextView"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:layout_centerInParent="true"
+            android:textAllCaps="false"
+            android:textColor="@color/colorPrimary"
+            android:id="@+id/attractionsListFragment_retryButton">
+        </Button>
+    </RelativeLayout>
 </FrameLayout>
