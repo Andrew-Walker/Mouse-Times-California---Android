@@ -82,9 +82,9 @@ public class AttractionsListFragment extends Fragment implements SearchView.OnQu
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        this.getActivity().getMenuInflater().inflate(R.menu.action_search, menu);
+        this.getActivity().getMenuInflater().inflate(R.menu.main_action_search, menu);
 
-        final MenuItem item = menu.findItem(R.id.action_search);
+        final MenuItem item = menu.findItem(R.id.actionSearch);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
         searchView.setOnQueryTextListener(this);
 
@@ -104,7 +104,6 @@ public class AttractionsListFragment extends Fragment implements SearchView.OnQu
 
         super.onCreateOptionsMenu(menu, inflater);
     }
-
 
     @Override
     public boolean onQueryTextChange(String newText) {

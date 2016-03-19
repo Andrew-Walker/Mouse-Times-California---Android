@@ -3,6 +3,7 @@ package com.andrewnwalker.mousetimes_california;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.BottomBarFragment;
@@ -14,6 +15,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
@@ -34,5 +37,20 @@ public class MainActivity extends AppCompatActivity {
         DataManager.toast.cancel();
 
         super.onBackPressed();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                AttractionsListFragment.hasContent = false;
+                DataManager.toast.cancel();
+
+                super.onBackPressed();
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

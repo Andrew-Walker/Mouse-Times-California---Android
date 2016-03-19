@@ -9,9 +9,13 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.ShareActionProvider;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -57,11 +61,14 @@ public class DetailActivity extends AppCompatActivity {
     private TextView timerTextView;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
+    private ShareActionProvider shareActionProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         editor = sharedPreferences.edit();
@@ -92,6 +99,20 @@ public class DetailActivity extends AppCompatActivity {
         this.addTimerLister();
         this.addEndTimerLister();
         this.addConfirmTimerLister();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.detail_action_share, menu);
+        MenuItem item = menu.findItem(R.id.actionShare);
+        shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+
+        Intent sendIntent = new Intent();
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "I've just been to '" + currentAttraction.name + "' at " + currentPark.name + "! I'm using 'Mouse Times - California' for iOS. You can download it here:\n\nhttp://itunes.apple.com/app/id1037614431");
+        sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Mouse Times - California");
+        sendIntent.setType("text/plain");
+        shareActionProvider.setShareIntent(sendIntent);
+        return true;
     }
 
     @Override
