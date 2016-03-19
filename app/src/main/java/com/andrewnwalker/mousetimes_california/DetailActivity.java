@@ -9,7 +9,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -102,17 +101,30 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.actionShare:
+                actionShare();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.detail_action_share, menu);
-        MenuItem item = menu.findItem(R.id.actionShare);
-        shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
 
+        return true;
+    }
+
+    private void actionShare(){
         Intent sendIntent = new Intent();
         sendIntent.putExtra(Intent.EXTRA_TEXT, "I've just been to '" + currentAttraction.name + "' at " + currentPark.name + "! I'm using 'Mouse Times - California' for iOS. You can download it here:\n\nhttp://itunes.apple.com/app/id1037614431");
         sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Mouse Times - California");
         sendIntent.setType("text/plain");
-        shareActionProvider.setShareIntent(sendIntent);
-        return true;
+
+        startActivity(sendIntent);
     }
 
     @Override
