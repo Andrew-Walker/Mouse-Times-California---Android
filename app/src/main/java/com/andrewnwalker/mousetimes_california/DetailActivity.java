@@ -56,6 +56,8 @@ public class DetailActivity extends AppCompatActivity {
     private long timerCountDifference;
     private Button confirmTimerButton;
     private Button endTimerButton;
+    private CardView endTimerButtonContainer;
+    private CardView confirmTimerButtonContainer;
     private Button startTimerButton;
     private CardView startTimerButtonContainer;
     private TextView timerTextView;
@@ -79,8 +81,9 @@ public class DetailActivity extends AppCompatActivity {
         confirmTimerButton = (Button) findViewById(R.id.detail_confirmTimer);
         endTimerButton = (Button) findViewById(R.id.detail_endTimer);
         startTimerButton = (Button) findViewById(R.id.detail_startTimer);
-        confirmTimerButton = (Button) findViewById(R.id.detail_confirmTimer);
+        endTimerButtonContainer = (CardView) findViewById(R.id.detail_endTimerContainer);
         startTimerButtonContainer = (CardView) findViewById(R.id.detail_startTimerContainer);
+        confirmTimerButtonContainer = (CardView) findViewById(R.id.detail_confirmTimerContainer);
 
         if (DataManager.fullFavouritesList.contains(currentAttraction.name)) {
             final Button starButton = (Button) findViewById(R.id.detail_starButton);
@@ -221,8 +224,8 @@ public class DetailActivity extends AppCompatActivity {
             @Override
             public void onAnimationEnd(Animation arg0) {
                 startTimerButtonContainer.setVisibility(View.GONE);
-                confirmTimerButton.setVisibility(View.VISIBLE);
-                endTimerButton.setVisibility(View.VISIBLE);
+                confirmTimerButtonContainer.setVisibility(View.VISIBLE);
+                endTimerButtonContainer.setVisibility(View.VISIBLE);
 
                 final AlphaAnimation fadeControlButtons = new AlphaAnimation(0.0f, 1.0f);
                 fadeControlButtons.setDuration(500);
@@ -237,8 +240,8 @@ public class DetailActivity extends AppCompatActivity {
                     }
                 });
 
-                endTimerButton.startAnimation(fadeControlButtons);
-                confirmTimerButton.startAnimation(fadeControlButtons);
+                endTimerButtonContainer.startAnimation(fadeControlButtons);
+                confirmTimerButtonContainer.startAnimation(fadeControlButtons);
             }
 
             public void onAnimationStart(Animation a) {
@@ -258,8 +261,8 @@ public class DetailActivity extends AppCompatActivity {
             @Override
             public void onAnimationEnd(Animation arg0) {
                 startTimerButtonContainer.setVisibility(View.VISIBLE);
-                confirmTimerButton.setVisibility(View.GONE);
-                endTimerButton.setVisibility(View.GONE);
+                confirmTimerButtonContainer.setVisibility(View.GONE);
+                endTimerButtonContainer.setVisibility(View.GONE);
 
                 timerTextView.setText("00:00:00");
 
@@ -286,8 +289,8 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
-        confirmTimerButton.startAnimation(fadeControlButtons);
-        endTimerButton.startAnimation(fadeControlButtons);
+        confirmTimerButtonContainer.startAnimation(fadeControlButtons);
+        endTimerButtonContainer.startAnimation(fadeControlButtons);
     }
 
     private void addFavouritesLister() {
