@@ -88,10 +88,16 @@ public class ParkSelect extends AppCompatActivity {
         String parkName = "Disneyland Park";
 
         switch (view.getId()) {
-            case R.id.parkSelect_disneylandParkButton:
+            case R.id.parkSelect_disneylandParkButtonTop:
                 parkName = "Disneyland Park";
                 break;
-            case R.id.parkSelect_californiaAdventureButton:
+            case R.id.parkSelect_disneylandParkButtonBottom:
+                parkName = "Disneyland Park";
+                break;
+            case R.id.parkSelect_californiaAdventureButtonTop:
+                parkName = "California Adventure";
+                break;
+            case R.id.parkSelect_californiaAdventureButtonBottom:
                 parkName = "California Adventure";
                 break;
         }

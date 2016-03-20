@@ -35,12 +35,13 @@ public class TimeRowAdapter extends RecyclerView.Adapter<TimeRowHolder> {
 
         if (position == 0) {
             holder.title.setText(waitTime);
-            holder.title.setBackgroundColor(Color.parseColor("#FF571D"));
+            holder.background.setBackgroundColor(Color.parseColor("#FF571D"));
         } else if (!currentAttraction.hasWaitTime) {
             holder.title.setText("Open");
-            holder.title.setBackgroundColor(Color.parseColor("#00FA2E"));
+            holder.background.setBackgroundColor(Color.parseColor("#00FA2E"));
         } else {
             holder.title.setText(waitTime);
+            holder.background.setBackgroundColor(Color.parseColor("#FF9400"));
         }
     }
 

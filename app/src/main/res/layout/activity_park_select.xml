@@ -1,97 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:paddingBottom="8dp"
     android:paddingLeft="8dp"
     android:paddingRight="8dp"
     android:paddingTop="8dp"
-    android:orientation="vertical"
     tools:context="com.andrewnwalker.mousetimes_california.ParkSelect">
 
     <TextView
+        android:id="@+id/parkSelect_titleTextView1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:padding="8dp"
         android:text="@string/chooseParkText"
-        android:textSize="21sp"
-        android:gravity="center"
         android:textColor="#FF2F92"
-        android:id="@+id/parkSelect_titleTextView1"/>
+        android:textSize="21sp" />
 
     <TextView
+        android:id="@+id/parkSelect_titleTextView2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:gravity="center"
+        android:onClick="openPark"
         android:paddingBottom="5dp"
         android:text="@string/chooseParkSubText"
-        android:textSize="17sp"
-        android:gravity="center"
-        android:id="@+id/parkSelect_titleTextView2"
-        android:layout_marginBottom="8dp"
-        android:textColor="#7F7F7F" />
+        android:textColor="#7F7F7F"
+        android:textSize="17sp" />
 
     <LinearLayout
+        android:id="@+id/parkSelect_disneylandParkButton"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:id="@+id/parkSelect_disneylandParkButton"
-        android:background="@drawable/dp1"
         android:layout_marginBottom="8dp"
-        android:onClick="openPark"
+        android:layout_weight="1"
+        android:background="@drawable/dp1"
+        android:orientation="vertical"
         android:scaleType="centerCrop">
 
         <TextView
+            android:id="@+id/parkSelect_disneylandParkButtonTop"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:textSize="17sp"
-            android:textColor="#FFFFFF"
-            android:text="@string/disneylandParkName"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:gravity="center|bottom"
+            android:onClick="openPark"
             android:paddingBottom="7dp"
-            android:gravity="center|bottom"/>
+            android:text="@string/disneylandParkName"
+            android:textColor="#FFFFFF"
+            android:textSize="17sp" />
+
         <TextView
+            android:id="@+id/parkSelect_disneylandParkButtonBottom"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:textSize="12sp"
-            android:textColor="#FFFFFF"
-            android:text="@string/disneylandParkAddress"
-            android:paddingTop="7dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:gravity="center|top"
             android:lineSpacingExtra="4dp"
-            android:gravity="center|top"/>
+            android:onClick="openPark"
+            android:paddingTop="7dp"
+            android:text="@string/disneylandParkAddress"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp" />
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/parkSelect_californiaAdventureButton"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="vertical"
-        android:id="@+id/parkSelect_californiaAdventureButton"
         android:background="@drawable/ca1"
-        android:onClick="openPark"
+        android:orientation="vertical"
         android:scaleType="centerCrop">
 
         <TextView
+            android:id="@+id/parkSelect_californiaAdventureButtonTop"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:textSize="17sp"
-            android:textColor="#FFFFFF"
-            android:text="@string/californiaAdventureName"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:gravity="center|bottom"
+            android:onClick="openPark"
             android:paddingBottom="7dp"
-            android:gravity="center|bottom"/>
+            android:text="@string/californiaAdventureName"
+            android:textColor="#FFFFFF"
+            android:textSize="17sp" />
+
         <TextView
+            android:id="@+id/parkSelect_californiaAdventureButtonBottom"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:textSize="12sp"
-            android:textColor="#FFFFFF"
-            android:text="@string/californiaAdventureAddress"
-            android:paddingTop="7dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:gravity="center|top"
             android:lineSpacingExtra="4dp"
-            android:gravity="center|top"/>
+            android:onClick="openPark"
+            android:paddingTop="7dp"
+            android:text="@string/californiaAdventureAddress"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp" />
     </LinearLayout>
 </LinearLayout>

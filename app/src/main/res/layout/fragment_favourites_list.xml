@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,16 +11,15 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary" />
 
-    <include layout="@layout/attractions_content"/>
+    <include layout="@layout/attractions_content" />
 
     <TextView
+        android:id="@+id/favouritesListFragment_defaultText"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/favouritesDescription"
-        android:id="@+id/favouritesListFragment_defaultText"
         android:layout_marginBottom="8dp"
         android:gravity="center"
-        android:visibility="invisible"
-        android:textSize="17sp">
-    </TextView>
+        android:text="@string/favouritesDescription"
+        android:textSize="17sp"
+        android:visibility="invisible" />
 </FrameLayout>

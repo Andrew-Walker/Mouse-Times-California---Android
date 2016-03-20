@@ -24,7 +24,6 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
 
         this.bottomBar = BottomBar.attach(this, savedInstanceState);
-        this.bottomBar.hideShadow();
         this.bottomBar.setFragmentItems(getSupportFragmentManager(), R.id.attractionsList_mainLayout,
                 new BottomBarFragment(new AttractionsListFragment(), R.drawable.clock, "Attractions"),
                 new BottomBarFragment(new ParkMapFragment(), R.drawable.map, "Map"),

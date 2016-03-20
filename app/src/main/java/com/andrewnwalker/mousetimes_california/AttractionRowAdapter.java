@@ -72,6 +72,7 @@ public class AttractionRowAdapter extends RecyclerView.Adapter<AttractionRowHold
         imageLoader = ImageLoader.getInstance();
 
         DisplayImageOptions options = new DisplayImageOptions.Builder()
+                .showImageOnLoading(R.drawable.placeholder_small)
                 .cacheInMemory(true)
                 .cacheOnDisk(true)
                 .resetViewBeforeLoading(true)

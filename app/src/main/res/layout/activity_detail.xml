@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -14,48 +14,53 @@
         <RelativeLayout
             android:id="@+id/detail_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content">
 
             <ImageView
+                android:id="@+id/detail_headerImageView"
                 android:layout_width="match_parent"
                 android:layout_height="135dp"
-                android:id="@+id/detail_headerImageView"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
-                android:layout_alignParentStart="true" android:layout_alignParentLeft="true"
-                android:scaleType="centerCrop"
-                android:adjustViewBounds="false" />
+                android:adjustViewBounds="false"
+                android:scaleType="centerCrop" />
 
             <Button
+                android:id="@+id/detail_starButton"
                 android:layout_width="49dp"
                 android:layout_height="49dp"
                 android:layout_alignBottom="@id/detail_headerImageView"
-                android:layout_alignRight="@id/detail_headerImageView" android:layout_alignEnd="@id/detail_headerImageView"
-                android:layout_marginRight="8dp" android:layout_marginEnd="8dp"
+                android:layout_alignEnd="@id/detail_headerImageView"
+                android:layout_alignRight="@id/detail_headerImageView"
                 android:layout_marginBottom="8dp"
-                android:id="@+id/detail_starButton"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
                 android:background="@drawable/star" />
 
             <LinearLayout
+                android:id="@+id/detail_mainDetailsLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/detail_headerImageView"
-                android:orientation="horizontal"
-                android:layout_marginTop="-30dp"
                 android:layout_marginBottom="16dp"
-                android:id="@+id/detail_mainDetailsLayout">
+                android:layout_marginTop="-30dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/detail_waitTimeTextView"
                     android:layout_width="90dp"
                     android:layout_height="90dp"
-                    android:text="@string/defaultWaitTime"
-                    android:layout_marginLeft="8dp" android:layout_marginStart="8dp"
-                    android:layout_marginRight="16dp" android:layout_marginEnd="16dp"
-                    android:gravity="center"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginStart="8dp"
                     android:background="@drawable/color0"
+                    android:gravity="center"
+                    android:singleLine="true"
+                    android:text="@string/defaultWaitTime"
                     android:textColor="#FFFFFF"
-                    android:textSize="25sp"
-                    android:singleLine="true"/>
+                    android:textSize="25sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -64,161 +69,181 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/detail_attractionNameTextView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginRight="8dp"
                         android:layout_weight="0.7"
-                        android:text="@string/defaultAttractionName"
-                        android:textColor="#333333"
-                        android:textSize="23sp"
-                        android:layout_marginRight="8dp" android:layout_marginEnd="8dp"
                         android:gravity="bottom"
                         android:singleLine="true"
-                        android:id="@+id/detail_attractionNameTextView"/>
+                        android:text="@string/defaultAttractionName"
+                        android:textColor="#333333"
+                        android:textSize="23sp" />
 
                     <TextView
+                        android:id="@+id/detail_updatedTextView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginRight="8dp"
                         android:layout_weight="1"
+                        android:gravity="bottom"
                         android:text="@string/defaultLastUpdated"
                         android:textColor="#7F7F7F"
-                        android:textSize="16sp"
-                        android:layout_marginRight="8dp" android:layout_marginEnd="8dp"
-                        android:gravity="bottom"
-                        android:id="@+id/detail_updatedTextView"/>
+                        android:textSize="16sp" />
                 </LinearLayout>
             </LinearLayout>
 
             <TextView
+                android:id="@+id/detail_howLongLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/detail_mainDetailsLayout"
-                android:text="@string/howLongText"
-                android:textSize="17sp"
-                android:textColor="#333333"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:id="@+id/detail_howLongLabel"/>
+                android:text="@string/howLongText"
+                android:textColor="#333333"
+                android:textSize="17sp" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/detail_waitTimesRecyclerView"
-                android:layout_below="@id/detail_howLongLabel"
                 android:layout_width="match_parent"
                 android:layout_height="39dp"
+                android:layout_below="@id/detail_howLongLabel"
                 android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp"
-                android:scrollbars="none"
-                android:overScrollMode="never"/>
+                android:overScrollMode="never"
+                android:scrollbars="none" />
 
             <TextView
+                android:id="@+id/detail_calculateTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/detail_waitTimesRecyclerView"
-                android:text="@string/calculateText"
-                android:textSize="17sp"
-                android:textColor="#333333"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:id="@+id/detail_calculateTextView"/>
+                android:text="@string/calculateText"
+                android:textColor="#333333"
+                android:textSize="17sp" />
 
             <LinearLayout
+                android:id="@+id/detail_timerLayout"
                 android:layout_width="match_parent"
                 android:layout_height="39dp"
+                android:layout_below="@id/detail_calculateTextView"
                 android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp"
-                android:layout_below="@id/detail_calculateTextView"
-                android:orientation="horizontal"
                 android:gravity="center"
-                android:id="@+id/detail_timerLayout">
+                android:orientation="horizontal">
 
                 <TextView
+                    android:id="@+id/detail_timerTextView"
                     android:layout_width="110dp"
                     android:layout_height="match_parent"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:background="@drawable/timer_container"
+                    android:gravity="center"
                     android:text="@string/defaultTimer"
                     android:textColor="#FF9400"
-                    android:gravity="center"
-                    android:layout_marginRight="8dp" android:layout_marginEnd="8dp"
-                    android:id="@+id/detail_timerTextView"
-                    android:textSize="18sp"
-                    android:background="@drawable/timer_container"/>
+                    android:textSize="18sp" />
 
-                <Button
+                <android.support.v7.widget.CardView
+                    android:id="@+id/detail_startTimerContainer"
                     android:layout_width="110dp"
                     android:layout_height="match_parent"
-                    android:textAllCaps="false"
-                    android:text="@string/startTimer"
-                    android:textColor="#FFFFFF"
-                    android:background="@drawable/timer_button_container"
-                    android:layout_marginLeft="8dp" android:layout_marginStart="8dp"
-                    android:textSize="15sp"
-                    android:id="@+id/detail_startTimer"
-                    style="?android:attr/borderlessButtonStyle" />
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    app:cardCornerRadius="7dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="#545454">
+
+                        <Button
+                            android:id="@+id/detail_startTimer"
+                            style="?android:attr/borderlessButtonStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="?android:selectableItemBackground"
+                            android:clickable="true"
+                            android:text="@string/startTimer"
+                            android:textAllCaps="false"
+                            android:textColor="#FFFFFF"
+                            android:textSize="15sp" />
+                    </LinearLayout>
+                </android.support.v7.widget.CardView>
 
                 <Button
-                    android:layout_width="39dp"
-                    android:layout_height="match_parent"
-                    android:text="@string/endTimer"
-                    android:textSize="28sp"
-                    android:textColor="#FFFFFF"
-                    android:background="@drawable/end_timer_container"
-                    android:layout_marginLeft="8dp" android:layout_marginStart="8dp"
-                    android:layout_marginRight="16dp" android:layout_marginEnd="16dp"
                     android:id="@+id/detail_endTimer"
-                    android:visibility="gone"
-                    style="?android:attr/borderlessButtonStyle"/>
-
-                <Button
+                    style="?android:attr/borderlessButtonStyle"
                     android:layout_width="39dp"
                     android:layout_height="match_parent"
-                    android:text="@string/confirmTimer"
-                    android:textSize="28sp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/end_timer_container"
+                    android:text="@string/endTimer"
                     android:textColor="#FFFFFF"
-                    android:background="@drawable/confirm_timer_container"
-                    android:layout_marginLeft="16dp" android:layout_marginStart="16dp"
+                    android:textSize="28sp"
+                    android:visibility="gone" />
+
+                <Button
                     android:id="@+id/detail_confirmTimer"
-                    android:visibility="gone"
-                    style="?android:attr/borderlessButtonStyle"/>
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="39dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginStart="16dp"
+                    android:background="@drawable/confirm_timer_container"
+                    android:text="@string/confirmTimer"
+                    android:textColor="#FFFFFF"
+                    android:textSize="28sp"
+                    android:visibility="gone" />
             </LinearLayout>
 
             <TextView
+                android:id="@+id/detail_aboutTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
                 android:layout_below="@id/detail_timerLayout"
-                android:text="@string/aboutAttractionText"
-                android:textSize="17sp"
-                android:textColor="#333333"
+                android:layout_marginBottom="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:id="@+id/detail_aboutTextView"/>
+                android:text="@string/aboutAttractionText"
+                android:textColor="#333333"
+                android:textSize="17sp" />
 
             <TextView
+                android:id="@+id/detail_descriptionTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/detail_aboutTextView"
-                android:text="@string/defaultAttractionDescription"
-                android:textSize="15sp"
-                android:textColor="#7F7F7F"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:id="@+id/detail_descriptionTextView" />
+                android:text="@string/defaultAttractionDescription"
+                android:textColor="#7F7F7F"
+                android:textSize="15sp" />
 
             <LinearLayout
+                android:id="@+id/detail_iconLayout"
                 android:layout_width="match_parent"
                 android:layout_height="39dp"
                 android:layout_below="@id/detail_descriptionTextView"
-                android:orientation="horizontal"
-                android:gravity="center"
                 android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp"
-                android:id="@+id/detail_iconLayout">
-            </LinearLayout>
+                android:gravity="center"
+                android:orientation="horizontal" />
 
             <fragment
                 android:id="@+id/detail_map"
                 android:name="com.google.android.gms.maps.MapFragment"
                 android:layout_width="match_parent"
                 android:layout_height="258dp"
-                android:layout_below="@id/detail_iconLayout"/>
+                android:layout_below="@id/detail_iconLayout" />
         </RelativeLayout>
     </ScrollView>
 </RelativeLayout>

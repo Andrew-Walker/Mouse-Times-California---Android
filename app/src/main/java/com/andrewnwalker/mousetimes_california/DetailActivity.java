@@ -4,12 +4,13 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.ShareActionProvider;
@@ -37,7 +38,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
@@ -57,10 +57,10 @@ public class DetailActivity extends AppCompatActivity {
     private Button confirmTimerButton;
     private Button endTimerButton;
     private Button startTimerButton;
+    private CardView startTimerButtonContainer;
     private TextView timerTextView;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
-    private ShareActionProvider shareActionProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +80,7 @@ public class DetailActivity extends AppCompatActivity {
         endTimerButton = (Button) findViewById(R.id.detail_endTimer);
         startTimerButton = (Button) findViewById(R.id.detail_startTimer);
         confirmTimerButton = (Button) findViewById(R.id.detail_confirmTimer);
+        startTimerButtonContainer = (CardView) findViewById(R.id.detail_startTimerContainer);
 
         if (DataManager.fullFavouritesList.contains(currentAttraction.name)) {
             final Button starButton = (Button) findViewById(R.id.detail_starButton);
@@ -101,30 +102,17 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.actionShare:
-                actionShare();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.detail_action_share, menu);
+        MenuItem item = menu.findItem(R.id.actionShare);
+        ShareActionProvider shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
 
-        return true;
-    }
-
-    private void actionShare(){
         Intent sendIntent = new Intent();
         sendIntent.putExtra(Intent.EXTRA_TEXT, "I've just been to '" + currentAttraction.name + "' at " + currentPark.name + "! I'm using 'Mouse Times - California' for iOS. You can download it here:\n\nhttp://itunes.apple.com/app/id1037614431");
         sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Mouse Times - California");
         sendIntent.setType("text/plain");
-
-        startActivity(sendIntent);
+        shareActionProvider.setShareIntent(sendIntent);
+        return true;
     }
 
     @Override
@@ -232,7 +220,7 @@ public class DetailActivity extends AppCompatActivity {
         fadeStartButton.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationEnd(Animation arg0) {
-                startTimerButton.setVisibility(View.GONE);
+                startTimerButtonContainer.setVisibility(View.GONE);
                 confirmTimerButton.setVisibility(View.VISIBLE);
                 endTimerButton.setVisibility(View.VISIBLE);
 
@@ -260,7 +248,7 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
-        startTimerButton.startAnimation(fadeStartButton);
+        startTimerButtonContainer.startAnimation(fadeStartButton);
     }
 
     private void animateAppear() {
@@ -269,7 +257,7 @@ public class DetailActivity extends AppCompatActivity {
         fadeControlButtons.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationEnd(Animation arg0) {
-                startTimerButton.setVisibility(View.VISIBLE);
+                startTimerButtonContainer.setVisibility(View.VISIBLE);
                 confirmTimerButton.setVisibility(View.GONE);
                 endTimerButton.setVisibility(View.GONE);
 
@@ -288,7 +276,7 @@ public class DetailActivity extends AppCompatActivity {
                     }
                 });
 
-                startTimerButton.startAnimation(fadeStartButton);
+                startTimerButtonContainer.startAnimation(fadeStartButton);
             }
 
             public void onAnimationStart(Animation a) {
@@ -485,24 +473,20 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void createHeaderImage() {
+        final ImageView headerImageView = (ImageView) findViewById(R.id.detail_headerImageView);
+
         DisplayImageOptions options = new DisplayImageOptions.Builder()
                 .cacheInMemory(true)
                 .cacheOnDisk(true)
                 .resetViewBeforeLoading(true)
-                .displayer(new FadeInBitmapDisplayer(2000))
+                .displayer(new FadeInBitmapDisplayer(500))
+                .showImageOnLoading(R.drawable.placeholder)
                 .build();
-
-        final ImageView headerImageView = (ImageView) findViewById(R.id.detail_headerImageView);
-        headerImageView.setImageResource(R.drawable.unloaded);
 
         final ImageLoader imageLoader;
         imageLoader = ImageLoader.getInstance();
-        imageLoader.loadImage(currentAttraction.attractionImage, options, new SimpleImageLoadingListener() {
-            @Override
-            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                headerImageView.setImageBitmap(loadedImage);
-            }
-        });
+
+        imageLoader.displayImage(currentAttraction.attractionImage, headerImageView, options);
     }
 
     private void createMap() {
