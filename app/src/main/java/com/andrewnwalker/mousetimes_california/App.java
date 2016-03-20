@@ -6,7 +6,7 @@ import android.content.Context;
 import com.parse.Parse;
 
 /**
- * Created by andy500mufc on 22/01/2016.
+ * Created by Andrew Walker on 22/01/2016.
  */
 public class App extends Application {
     private static Context mContext;
@@ -23,7 +23,7 @@ public class App extends Application {
         Parse.initialize(this);
     }
 
-    public static Context getContext(){
+    public static Context getContext() {
         return mContext;
     }
 }

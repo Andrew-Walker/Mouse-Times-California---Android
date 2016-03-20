@@ -1,7 +1,3 @@
-/**
- * Created by andy500mufc on 14/01/2016.
- */
-
 package com.andrewnwalker.mousetimes_california;
 
 import android.content.Context;
@@ -23,14 +19,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Created by Andrew Walker on 14/01/2016.
+ */
 public class DataManager {
-    public enum NotificationType { TOAST, BACKGROUND }
+    public enum NotificationType {TOAST, BACKGROUND}
 
     static Toast toast;
-    static ArrayList<Attraction> globalAttractionsList = new ArrayList<Attraction>();
-    static ArrayList<Park> globalParkList = new ArrayList<Park>();
-    static ArrayList<String> fullFavouritesList = new ArrayList<String>();
-    static ArrayList<Attraction> currentFavouritesList = new ArrayList<Attraction>();
+    static ArrayList<Attraction> globalAttractionsList = new ArrayList<>();
+    static ArrayList<Park> globalParkList = new ArrayList<>();
+    static ArrayList<String> fullFavouritesList = new ArrayList<>();
+    static ArrayList<Attraction> currentFavouritesList = new ArrayList<>();
 
     public static void loadParks() {
         Park disneylandPark = new Park("Disneyland Park", "1313 Disneyland Drive,\nAnaheim, CA 92802", 33.812067, -117.918981, 0, "http://dlwait.zingled.com/dlp");
@@ -41,7 +40,7 @@ public class DataManager {
     }
 
     public static List<Attraction> loadAttractions(final Context context, final Fragment fragment, String parkName) {
-        final ArrayList<Attraction> attractionArrayList = new ArrayList<Attraction>();
+        final ArrayList<Attraction> attractionArrayList = new ArrayList<>();
         final NotificationType notificationType = AttractionsListFragment.hasContent ? NotificationType.TOAST : NotificationType.BACKGROUND;
 
         AttractionsListFragment.progressCircle.setVisibility((notificationType == NotificationType.BACKGROUND) && fragment instanceof AttractionsListFragment ? View.VISIBLE : View.INVISIBLE);
@@ -151,21 +150,21 @@ public class DataManager {
     }
 
     public static Park findParkByName(String parkName) {
-        for(Park park: globalParkList) {
+        for (Park park : globalParkList) {
             if (park.name.equals(parkName)) return park;
         }
         return null;
     }
 
     public static Attraction findAttractionByName(String attractionName) {
-        for(Attraction attraction: globalAttractionsList) {
+        for (Attraction attraction : globalAttractionsList) {
             if (attraction.name.equals(attractionName)) return attraction;
         }
         return null;
     }
 
     public static void sendUpdateToParse(final Context context, final String timeSelected, Park currentPark, Attraction currentAttraction) {
-        ParseQuery query = new ParseQuery(currentPark.name.replaceAll("\\s+",""));
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(currentPark.name.replaceAll("\\s+", ""));
         query.whereEqualTo("Name", currentAttraction.name);
         query.getFirstInBackground(new GetCallback<ParseObject>() {
             public void done(ParseObject object, ParseException e) {

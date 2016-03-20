@@ -9,6 +9,9 @@ import android.view.ViewGroup;
 
 import com.google.android.gms.maps.SupportMapFragment;
 
+/**
+ * Created by Andrew Walker on 14/01/2016.
+ */
 public class ParkMapFragment extends Fragment {
     public static Park parkPassed;
 
@@ -25,7 +28,7 @@ public class ParkMapFragment extends Fragment {
     }
 
     @Override
-    public void onStart(){
+    public void onStart() {
         super.onStart();
 
         this.getActivity().setTitle("Map");

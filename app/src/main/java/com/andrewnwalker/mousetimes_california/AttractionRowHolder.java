@@ -7,7 +7,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 /**
- * Created by andy500mufc on 09/02/2016.
+ * Created by Andrew Walker on 09/02/2016.
  */
 public class AttractionRowHolder extends RecyclerView.ViewHolder {
     protected TextView nameTextView;

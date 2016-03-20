@@ -5,7 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 /**
- * Created by andy500mufc on 04/02/2016.
+ * Created by Andrew Walker on 14/01/2016.
  */
 public class HorizontalRecyclerHelper extends RecyclerView.ItemDecoration {
     private final int space;

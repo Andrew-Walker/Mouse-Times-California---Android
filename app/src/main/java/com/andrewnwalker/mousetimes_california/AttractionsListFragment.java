@@ -27,6 +27,9 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Created by Andrew Walker on 09/02/2016.
+ */
 public class AttractionsListFragment extends Fragment implements SearchView.OnQueryTextListener {
     public static Park parkPassed;
     private List<Attraction> attractionsList;
@@ -41,6 +44,7 @@ public class AttractionsListFragment extends Fragment implements SearchView.OnQu
         // Required empty public constructor
     }
 
+    //region Lifecycle
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         this.setHasOptionsMenu(true);
@@ -49,7 +53,7 @@ public class AttractionsListFragment extends Fragment implements SearchView.OnQu
     }
 
     @Override
-    public void onStart(){
+    public void onStart() {
         super.onStart();
 
         Fragment fragment = AttractionsListFragment.this;
@@ -104,7 +108,9 @@ public class AttractionsListFragment extends Fragment implements SearchView.OnQu
 
         super.onCreateOptionsMenu(menu, inflater);
     }
+    //endregion
 
+    //region SearchView
     @Override
     public boolean onQueryTextChange(String newText) {
         final List<Attraction> filteredModelList = filter(attractionsList, newText);
@@ -120,7 +126,7 @@ public class AttractionsListFragment extends Fragment implements SearchView.OnQu
     private List<Attraction> filter(List<Attraction> attractions, String query) {
         List<Attraction> filteredAttractionsList = new ArrayList<>();
 
-        for (Attraction attraction: attractions) {
+        for (Attraction attraction : attractions) {
             final String text = attraction.name.toLowerCase();
             if (text.contains(query.toLowerCase())) {
                 filteredAttractionsList.add(attraction);
@@ -129,7 +135,9 @@ public class AttractionsListFragment extends Fragment implements SearchView.OnQu
 
         return filteredAttractionsList;
     }
+    //endregion
 
+    //region Private methods
     private void setupRecycler() {
         RecyclerView attractionsRecycler;
 
@@ -171,4 +179,5 @@ public class AttractionsListFragment extends Fragment implements SearchView.OnQu
         errorLayout.setVisibility(View.INVISIBLE);
         AttractionsListFragment.pullToRefreshLayout.setVisibility(View.VISIBLE);
     }
+    //endregion
 }

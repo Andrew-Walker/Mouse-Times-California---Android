@@ -6,9 +6,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
- * Created by andy500mufc on 30/01/2016.
+ * Created by Andrew Walker on 14/01/2016.
  */
-public class TimeRowHolder extends RecyclerView.ViewHolder  {
+public class TimeRowHolder extends RecyclerView.ViewHolder {
     protected TextView title;
     protected LinearLayout background;
 

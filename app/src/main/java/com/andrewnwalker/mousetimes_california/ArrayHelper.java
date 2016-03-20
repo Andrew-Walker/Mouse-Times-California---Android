@@ -10,7 +10,7 @@ import org.json.JSONException;
 import java.util.ArrayList;
 
 /**
- * Created by andy500mufc on 17/03/2016.
+ * Created by Andrew Walker on 17/03/2016.
  */
 public class ArrayHelper {
     Context context;
@@ -31,7 +31,7 @@ public class ArrayHelper {
     }
 
     ArrayList<String> getArray(String key) {
-        ArrayList<String> array = new ArrayList<String>();
+        ArrayList<String> array = new ArrayList<>();
         String jArrayString = prefs.getString(key, "NOPREFSAVED");
         if (jArrayString.matches("NOPREFSAVED")) return getDefaultArray();
         else {
@@ -48,10 +48,10 @@ public class ArrayHelper {
     }
 
     private ArrayList<String> getDefaultArray() {
-        ArrayList<String> array = new ArrayList<String>();
-        array.add("Example 1");
-        array.add("Example 2");
-        array.add("Example 3");
+        ArrayList<String> array = new ArrayList<>();
+        array.add("Default 1");
+        array.add("Default 2");
+        array.add("Default 3");
 
         return array;
     }

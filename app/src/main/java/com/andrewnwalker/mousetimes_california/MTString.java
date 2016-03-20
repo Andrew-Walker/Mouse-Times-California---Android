@@ -3,13 +3,13 @@ package com.andrewnwalker.mousetimes_california;
 import org.joda.time.Period;
 
 /**
- * Created by andy500mufc on 28/01/2016.
+ * Created by Andrew Walker on 14/01/2016.
  */
 public class MTString {
     static public String str;
 
     public MTString(String str) {
-        this.str = str;
+        MTString.str = str;
     }
 
     static public String convertPeriodToString(Period period) {

@@ -12,6 +12,8 @@
     <string name="defaultError">A connection error occurred.</string>
 
     <string name="favouritesDescription">Any attractions you favourite will appear here.</string>
+    <string name="openButton">Open</string>
+    <string name="attractionStatusText">What is the current attraction status?</string>
     <string name="retryButton">Try Again</string>
     <string name="lastUpdatedImageContentDescription">Last Updated Image</string>
     <string name="attractionImageContentDescription">Attraction Image</string>

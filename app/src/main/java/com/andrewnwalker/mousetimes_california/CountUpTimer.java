@@ -5,10 +5,13 @@ import android.os.Message;
 import android.os.SystemClock;
 
 /**
- * Created by andy500mufc on 13/02/2016.
+ * Created by Andrew Walker on 13/02/2016.
  */
 
 public abstract class CountUpTimer {
+    abstract public void onTick(long elapsedTime);
+
+    private static final int MSG = 1;
     private final long interval;
     private long base;
 
@@ -30,10 +33,6 @@ public abstract class CountUpTimer {
             base = SystemClock.elapsedRealtime();
         }
     }
-
-    abstract public void onTick(long elapsedTime);
-
-    private static final int MSG = 1;
 
     private Handler handler = new Handler() {
         @Override

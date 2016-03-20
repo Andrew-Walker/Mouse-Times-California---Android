@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Created by andy500mufc on 29/01/2016.
+ * Created by Andrew Walker on 14/01/2016.
  */
 public class Park implements Parcelable {
     String name;
@@ -37,7 +37,7 @@ public class Park implements Parcelable {
         out.writeInt(this.orientation);
         out.writeString(this.dataSource);
     }
-    
+
     public static final Creator<Park> CREATOR = new Creator<Park>() {
         public Park createFromParcel(Parcel in) {
             return new Park(in);

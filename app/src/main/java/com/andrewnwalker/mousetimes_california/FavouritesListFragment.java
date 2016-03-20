@@ -1,6 +1,5 @@
 package com.andrewnwalker.mousetimes_california;
 
-
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -18,6 +17,9 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
+/**
+ * Created by Andrew Walker on 14/01/2016.
+ */
 public class FavouritesListFragment extends Fragment {
     public static TextView backgroundLayout;
     public static Park parkPassed;
@@ -28,6 +30,7 @@ public class FavouritesListFragment extends Fragment {
         // Required empty public constructor
     }
 
+    //region Lifecycle
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
@@ -36,7 +39,7 @@ public class FavouritesListFragment extends Fragment {
     }
 
     @Override
-    public void onStart(){
+    public void onStart() {
         super.onStart();
 
         this.getActivity().setTitle("Favourites");
@@ -61,7 +64,9 @@ public class FavouritesListFragment extends Fragment {
         });
         pullToRefreshLayout.setColorSchemeColors(Color.parseColor("#FF2F92"), Color.parseColor("#0080FF"));
     }
+    //endregion
 
+    //region Private methods
     private void setupRecycler() {
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getActivity());
         RecyclerView attractionsRecycler = (RecyclerView) this.getActivity().findViewById(R.id.contentMain_attractionsRecycler);
@@ -83,7 +88,9 @@ public class FavouritesListFragment extends Fragment {
 
         ImageLoader.getInstance().init(config);
     }
+    //endregion
 
+    //region Public methods
     public static void findFavourites() {
         DataManager.currentFavouritesList.clear();
 
@@ -99,4 +106,5 @@ public class FavouritesListFragment extends Fragment {
 
         AttractionsListFragment.attractionsAdapter.notifyDataSetChanged();
     }
+    //endregion
 }

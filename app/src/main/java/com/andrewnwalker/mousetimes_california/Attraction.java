@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import org.joda.time.DateTime;
 
 /**
- * Created by andy500mufc on 14/01/2016.
+ * Created by Andrew Walker on 14/01/2016.
  */
 public class Attraction implements Parcelable {
     String name;

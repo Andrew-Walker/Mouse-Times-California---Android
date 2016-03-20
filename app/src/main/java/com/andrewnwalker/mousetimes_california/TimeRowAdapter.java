@@ -5,12 +5,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 /**
- * Created by andy500mufc on 30/01/2016.
+ * Created by Andrew Walker on 14/01/2016.
  */
 public class TimeRowAdapter extends RecyclerView.Adapter<TimeRowHolder> {
     private String[] timesArray = {"Closed", "0m", "5m", "10m", "15m", "20m", "25m", "30m", "35m", "40m", "45m", "50m", "55m", "60m", "65m", "70m", "75m", "80m+"};
@@ -37,7 +36,7 @@ public class TimeRowAdapter extends RecyclerView.Adapter<TimeRowHolder> {
             holder.title.setText(waitTime);
             holder.background.setBackgroundColor(Color.parseColor("#FF571D"));
         } else if (!currentAttraction.hasWaitTime) {
-            holder.title.setText("Open");
+            holder.title.setText(R.string.openButton);
             holder.background.setBackgroundColor(Color.parseColor("#00FA2E"));
         } else {
             holder.title.setText(waitTime);
@@ -47,9 +46,9 @@ public class TimeRowAdapter extends RecyclerView.Adapter<TimeRowHolder> {
 
     @Override
     public TimeRowHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.time_row, null);
-        final TimeRowHolder holder = new TimeRowHolder(view);
+        View view = View.inflate(viewGroup.getContext(), R.layout.time_row, null);
 
+        final TimeRowHolder holder = new TimeRowHolder(view);
         holder.title.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

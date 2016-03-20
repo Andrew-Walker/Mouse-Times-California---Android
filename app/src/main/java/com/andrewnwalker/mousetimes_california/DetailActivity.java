@@ -47,61 +47,49 @@ import org.joda.time.Period;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Created by Andrew Walker on 14/01/2016.
+ */
 public class DetailActivity extends AppCompatActivity {
     private Park currentPark;
     private Attraction currentAttraction;
-    private RecyclerView recyclerView;
     private CountUpTimer timer;
     private long timerCount;
     private long timerCountDifference;
-    private Button confirmTimerButton;
-    private Button endTimerButton;
     private CardView endTimerButtonContainer;
     private CardView confirmTimerButtonContainer;
     private Button startTimerButton;
     private CardView startTimerButtonContainer;
     private TextView timerTextView;
     private SharedPreferences sharedPreferences;
-    private SharedPreferences.Editor editor;
 
+    //region Lifecycle
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        editor = sharedPreferences.edit();
 
         Intent intent = getIntent();
         currentAttraction = intent.getParcelableExtra("currentAttraction");
         currentPark = intent.getParcelableExtra("currentPark");
-
-        confirmTimerButton = (Button) findViewById(R.id.detail_confirmTimer);
-        endTimerButton = (Button) findViewById(R.id.detail_endTimer);
-        startTimerButton = (Button) findViewById(R.id.detail_startTimer);
-        endTimerButtonContainer = (CardView) findViewById(R.id.detail_endTimerContainer);
-        startTimerButtonContainer = (CardView) findViewById(R.id.detail_startTimerContainer);
-        confirmTimerButtonContainer = (CardView) findViewById(R.id.detail_confirmTimerContainer);
-
-        if (DataManager.fullFavouritesList.contains(currentAttraction.name)) {
-            final Button starButton = (Button) findViewById(R.id.detail_starButton);
-            starButton.setBackgroundResource(R.drawable.star_filled);
-        }
 
         this.createMap();
         this.createHeaderImage();
         this.setupWaitTimes();
         this.setupIconLayout();
         this.setupTimer();
+        this.getLayoutItems();
 
         this.detectLayoutCompletion();
 
-        this.addFavouritesLister();
-        this.addTimerLister();
-        this.addEndTimerLister();
-        this.addConfirmTimerLister();
+        this.addFavouritesListener();
+        this.addTimerListener();
+        this.addEndTimerListener();
+        this.addConfirmTimerListener();
     }
 
     @Override
@@ -110,16 +98,20 @@ public class DetailActivity extends AppCompatActivity {
         MenuItem item = menu.findItem(R.id.actionShare);
         ShareActionProvider shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
 
+        String subjectString = "Mouse Times - California";
+        String contentString = "I've just been to '" + currentAttraction.name + "' at " + currentPark.name + "! I'm using 'Mouse Times - California' for iOS. You can download it here:\n\nhttp://itunes.apple.com/app/id1037614431";
+
         Intent sendIntent = new Intent();
-        sendIntent.putExtra(Intent.EXTRA_TEXT, "I've just been to '" + currentAttraction.name + "' at " + currentPark.name + "! I'm using 'Mouse Times - California' for iOS. You can download it here:\n\nhttp://itunes.apple.com/app/id1037614431");
-        sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Mouse Times - California");
+        sendIntent.putExtra(Intent.EXTRA_SUBJECT, subjectString);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, contentString);
         sendIntent.setType("text/plain");
         shareActionProvider.setShareIntent(sendIntent);
+
         return true;
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
 
         String attractionTimerName = sharedPreferences.getString("attractionTimerName", "Fail");
@@ -132,6 +124,15 @@ public class DetailActivity extends AppCompatActivity {
             animateFade();
             timer.start();
         }
+    }
+    //endregion
+
+    //region Private methods
+    private void getLayoutItems() {
+        confirmTimerButtonContainer = (CardView) findViewById(R.id.detail_confirmTimerContainer);
+        endTimerButtonContainer = (CardView) findViewById(R.id.detail_endTimerContainer);
+        startTimerButton = (Button) findViewById(R.id.detail_startTimer);
+        startTimerButtonContainer = (CardView) findViewById(R.id.detail_startTimerContainer);
     }
 
     private void setupTimer() {
@@ -164,59 +165,214 @@ public class DetailActivity extends AppCompatActivity {
         Interval interval = new Interval(currentAttraction.updated, new Instant());
         Period period = interval.toPeriod();
 
-        attractionNameTextView.setText(currentAttraction.name);
-        updatedTextView.setText(MTString.convertPeriodToString(period));
-        descriptionTextView.setText(currentAttraction.attractionDescription);
+        if (attractionNameTextView != null && updatedTextView != null && descriptionTextView != null) {
+            attractionNameTextView.setText(currentAttraction.name);
+            updatedTextView.setText(MTString.convertPeriodToString(period));
+            descriptionTextView.setText(currentAttraction.attractionDescription);
+        }
 
         if (!currentAttraction.hasWaitTime) {
-            TextView label = (TextView) findViewById(R.id.detail_howLongLabel);
-            label.setText("What is the current attraction status?");
+            TextView inputLabel = (TextView) findViewById(R.id.detail_howLongLabel);
+            if (inputLabel != null) inputLabel.setText(R.string.attractionStatusText);
 
             TextView timerTextView = (TextView) findViewById(R.id.detail_calculateTextView);
-            timerTextView.setVisibility(View.GONE);
+            if (timerTextView != null) timerTextView.setVisibility(View.GONE);
 
             LinearLayout timerLayout = (LinearLayout) findViewById(R.id.detail_timerLayout);
-            timerLayout.setVisibility(View.GONE);
+            if (timerLayout != null) timerLayout.setVisibility(View.GONE);
+        }
+
+        if (DataManager.fullFavouritesList.contains(currentAttraction.name)) {
+            final Button starButton = (Button) findViewById(R.id.detail_starButton);
+            if (starButton != null) starButton.setBackgroundResource(R.drawable.star_filled);
         }
 
         setWaitTime(currentAttraction.waitTime);
     }
 
+    private void detectLayoutCompletion() {
+        final ImageView testView = (ImageView) findViewById(R.id.detail_headerImageView);
+        if (testView != null) {
+            ViewTreeObserver viewObserver = testView.getViewTreeObserver();
+            viewObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    setupIconLayout();
+                    setupViews();
+
+                    ViewTreeObserver obs = testView.getViewTreeObserver();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        obs.removeOnGlobalLayoutListener(this);
+                    } else {
+                        obs.removeGlobalOnLayoutListener(this);
+                    }
+                }
+            });
+        }
+    }
+
+    private long roundUp(long n) {
+        return (n + 4) / 5 * 5;
+    }
+
+    private void setupIconLayout() {
+        ArrayList<String> icons = new ArrayList<>();
+
+        if (currentAttraction.disabledAccess) {
+            icons.add("disabled_access");
+        }
+
+        if (currentAttraction.fastPass) {
+            icons.add("fast_pass");
+        }
+
+        if (currentAttraction.mustSee) {
+            icons.add("must_see");
+        }
+
+        if (currentAttraction.heightRestriction) {
+            icons.add("height_restriction");
+        }
+
+        if (currentAttraction.singleRider) {
+            icons.add("single_rider");
+        }
+
+        LinearLayout iconLayout = (LinearLayout) findViewById(R.id.detail_iconLayout);
+        if (iconLayout != null) {
+            if (icons.size() > 0) {
+                for (int i = 0; i < icons.size(); i++) {
+                    ImageView imageView = new ImageView(this);
+                    imageView.setLayoutParams(new LinearLayout.LayoutParams(iconLayout.getHeight(), iconLayout.getHeight()));
+                    imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                    imageView.setPadding(10, 0, 10, 0);
+
+                    String drawableName = "@drawable/" + icons.get(i);
+                    int resourceID = this.getResources().getIdentifier(drawableName, null, this.getPackageName());
+                    Drawable resource = this.getResources().getDrawable(resourceID);
+                    imageView.setImageDrawable(resource);
+
+                    iconLayout.addView(imageView);
+                }
+            } else {
+                ViewGroup.LayoutParams params = iconLayout.getLayoutParams();
+                params.height = 0;
+                iconLayout.setLayoutParams(params);
+            }
+        }
+    }
+
+    private void setupWaitTimes() {
+        HorizontalRecyclerHelper itemDecorator = new HorizontalRecyclerHelper(16);
+
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.detail_waitTimesRecyclerView);
+        if (recyclerView != null) {
+            recyclerView.setHasFixedSize(true);
+            recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+            recyclerView.addItemDecoration(itemDecorator);
+
+            TimeRowAdapter adapter = new TimeRowAdapter(this, currentPark, currentAttraction);
+            recyclerView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    private void createHeaderImage() {
+        final ImageView headerImageView = (ImageView) findViewById(R.id.detail_headerImageView);
+        if (headerImageView != null) {
+            DisplayImageOptions options = new DisplayImageOptions.Builder()
+                    .cacheInMemory(true)
+                    .cacheOnDisk(true)
+                    .resetViewBeforeLoading(true)
+                    .displayer(new FadeInBitmapDisplayer(500))
+                    .showImageOnLoading(R.drawable.placeholder)
+                    .build();
+
+            final ImageLoader imageLoader;
+            imageLoader = ImageLoader.getInstance();
+
+            imageLoader.displayImage(currentAttraction.attractionImage, headerImageView, options);
+        }
+    }
+
+    private void createMap() {
+        GoogleMap googleMap;
+        googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.detail_map)).getMap();
+        googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+        googleMap.getUiSettings().setScrollGesturesEnabled(false);
+
+        CameraPosition oldPos = googleMap.getCameraPosition();
+        CameraPosition pos = CameraPosition.builder(oldPos).bearing(currentPark.orientation).build();
+        googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(pos));
+
+        LatLng coordinate = new LatLng(currentAttraction.latitude, currentAttraction.longitude);
+        CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(coordinate, 17);
+        googleMap.animateCamera(yourLocation);
+
+        Marker attractionMarker = googleMap.addMarker(new MarkerOptions()
+                .position(new LatLng(currentAttraction.latitude, currentAttraction.longitude))
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.pin))
+                .title(currentAttraction.name)
+                .snippet("34 kilometer(s)"));
+
+        attractionMarker.showInfoWindow();
+    }
+    //endregion
+
+    //region Actions
+    private void addFavourite(Button button) {
+        if (DataManager.fullFavouritesList.contains(currentAttraction.name)) {
+            DataManager.fullFavouritesList.remove(currentAttraction.name);
+            button.setBackgroundResource(R.drawable.star);
+        } else {
+            DataManager.fullFavouritesList.add(currentAttraction.name);
+            button.setBackgroundResource(R.drawable.star_filled);
+        }
+
+        ArrayHelper arrayHelper = new ArrayHelper(this);
+        arrayHelper.saveArray("favourites", DataManager.fullFavouritesList);
+    }
+
+    private void startTimer() {
+        timerCountDifference = 0;
+        timerCount = 0;
+
+        timer.start();
+
+        DateTime startTime = DateTime.now();
+        long startTimeMilliseconds = startTime.getMillis();
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("attractionTimerName", currentAttraction.name);
+        editor.putLong("attractionTimerStart", startTimeMilliseconds);
+        editor.putBoolean("attractionTimerRunning", true);
+        editor.apply();
+
+        animateFade();
+    }
+    //endregion
+
+    //region Public actions
     public void setWaitTime(String waitTime) {
         TextView waitTimeTextView = (TextView) findViewById(R.id.detail_waitTimeTextView);
+        if (waitTimeTextView == null) return;
+
         waitTimeTextView.setText(MTString.convertWaitTimeToDisplayWaitTime(waitTime));
 
         if (waitTime.equals("Closed") || waitTime.equals("Open")) {
-            ((TextView) findViewById(R.id.detail_waitTimeTextView)).setTextSize(18);
+            waitTimeTextView.setTextSize(18);
         } else {
-            ((TextView) findViewById(R.id.detail_waitTimeTextView)).setTextSize(30);
+            waitTimeTextView.setTextSize(30);
         }
 
         String drawableName = "@drawable/color" + waitTime.toLowerCase();
         int resourceID = this.getResources().getIdentifier(drawableName, null, this.getPackageName());
         Drawable resource = this.getResources().getDrawable(resourceID);
-        findViewById(R.id.detail_waitTimeTextView).setBackgroundDrawable(resource);
+        waitTimeTextView.setBackgroundDrawable(resource);
     }
+    //endregion
 
-    private void detectLayoutCompletion() {
-        final ImageView testView = (ImageView)findViewById(R.id.detail_headerImageView);
-        ViewTreeObserver viewObserver = testView.getViewTreeObserver();
-        viewObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                setupIconLayout();
-                setupViews();
-
-                ViewTreeObserver obs = testView.getViewTreeObserver();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    obs.removeOnGlobalLayoutListener(this);
-                } else {
-                    obs.removeGlobalOnLayoutListener(this);
-                }
-            }
-        });
-    }
-
+    //region Animations
     private void animateFade() {
         final AlphaAnimation fadeStartButton = new AlphaAnimation(1.0f, 0.0f);
         fadeStartButton.setDuration(500);
@@ -264,7 +420,7 @@ public class DetailActivity extends AppCompatActivity {
                 confirmTimerButtonContainer.setVisibility(View.GONE);
                 endTimerButtonContainer.setVisibility(View.GONE);
 
-                timerTextView.setText("00:00:00");
+                timerTextView.setText(R.string.defaultTimer);
 
                 final AlphaAnimation fadeStartButton = new AlphaAnimation(0.0f, 1.0f);
                 fadeStartButton.setDuration(500);
@@ -292,77 +448,86 @@ public class DetailActivity extends AppCompatActivity {
         confirmTimerButtonContainer.startAnimation(fadeControlButtons);
         endTimerButtonContainer.startAnimation(fadeControlButtons);
     }
+    //endregion
 
-    private void addFavouritesLister() {
+    //region Listeners
+    private void addFavouritesListener() {
         final Button starButton = (Button) findViewById(R.id.detail_starButton);
-        starButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                addFavourite(starButton);
-            }
-        });
+        if (starButton != null) {
+            starButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View arg0) {
+                    addFavourite(starButton);
+                }
+            });
+        }
     }
 
-    private void addEndTimerLister() {
+    private void addEndTimerListener() {
         final Button endTimerButton = (Button) findViewById(R.id.detail_endTimer);
-        endTimerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                timer.stop();
+        if (endTimerButton != null) {
+            endTimerButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View arg0) {
+                    timer.stop();
 
-                editor.putString("attractionTimerName", new String());
-                editor.putLong("attractionTimerStart", 0);
-                editor.putBoolean("attractionTimerRunning", false);
-                editor.commit();
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("attractionTimerName", null);
+                    editor.putLong("attractionTimerStart", 0);
+                    editor.putBoolean("attractionTimerRunning", false);
+                    editor.apply();
 
-                animateAppear();
-            }
-        });
+                    animateAppear();
+                }
+            });
+        }
     }
 
-    private void addConfirmTimerLister() {
+    private void addConfirmTimerListener() {
         final Button confirmTimerButton = (Button) findViewById(R.id.detail_confirmTimer);
-        confirmTimerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                timer.stop();
+        if (confirmTimerButton != null) {
+            confirmTimerButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View arg0) {
+                    timer.stop();
 
-                animateAppear();
+                    animateAppear();
 
-                long timerAsMinutes = TimeUnit.MILLISECONDS.toMinutes(timerCount);
-                timerAsMinutes = roundUp(timerAsMinutes);
+                    long timerAsMinutes = TimeUnit.MILLISECONDS.toMinutes(timerCount);
+                    timerAsMinutes = roundUp(timerAsMinutes);
 
-                if (timerAsMinutes > 80) {
-                    timerAsMinutes = 80;
-                }
-
-                final StringBuilder reducedTimer = new StringBuilder(String.valueOf(timerAsMinutes));
-                if (reducedTimer.charAt(0) == '0' && reducedTimer.length() > 1) {
-                    reducedTimer.deleteCharAt(0);
-                }
-
-                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(DetailActivity.this);
-
-                alertDialogBuilder.setTitle("Submit Time");
-                alertDialogBuilder.setMessage("Are you sure you want to submit a time of " + TimeUnit.MILLISECONDS.toMinutes(timerCount) + " minutes? Please only submit times that are accurate!");
-                alertDialogBuilder.setPositiveButton("I'm sure", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        DataManager.sendUpdateToParse(DetailActivity.this, reducedTimer.toString(), currentPark, currentAttraction);
+                    if (timerAsMinutes > 80) {
+                        timerAsMinutes = 80;
                     }
-                });
-                alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
 
-                AlertDialog alertDialog = alertDialogBuilder.create();
-                alertDialog.show();
-            }
-        });
+                    final StringBuilder reducedTimer = new StringBuilder(String.valueOf(timerAsMinutes));
+                    if (reducedTimer.charAt(0) == '0' && reducedTimer.length() > 1) {
+                        reducedTimer.deleteCharAt(0);
+                    }
+
+                    final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(DetailActivity.this);
+
+                    alertDialogBuilder.setTitle("Submit Time");
+                    alertDialogBuilder.setMessage("Are you sure you want to submit a time of " + TimeUnit.MILLISECONDS.toMinutes(timerCount) + " minutes? Please only submit times that are accurate!");
+                    alertDialogBuilder.setPositiveButton("I'm sure", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            DataManager.sendUpdateToParse(DetailActivity.this, reducedTimer.toString(), currentPark, currentAttraction);
+                        }
+                    });
+                    alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+                    alertDialog.show();
+                }
+            });
+        }
     }
 
-    private void addTimerLister() {
+    private void addTimerListener() {
         startTimerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
@@ -393,148 +558,5 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
     }
-
-    private void startTimer() {
-        timerCountDifference = 0;
-        timerCount = 0;
-
-        timer.start();
-
-        DateTime startTime = DateTime.now();
-        long startTimeMilliseconds = startTime.getMillis();
-
-        editor.putString("attractionTimerName", currentAttraction.name);
-        editor.putLong("attractionTimerStart", startTimeMilliseconds);
-        editor.putBoolean("attractionTimerRunning", true);
-        editor.commit();
-
-        animateFade();
-    }
-
-
-    private long roundUp(long n) {
-        return (n + 4) / 5 * 5;
-    }
-
-    private void setupIconLayout() {
-        ArrayList<String> icons = new ArrayList<String>();
-
-        if (currentAttraction.disabledAccess) {
-            icons.add("disabled_access");
-        }
-
-        if (currentAttraction.fastPass) {
-            icons.add("fast_pass");
-        }
-
-        if (currentAttraction.mustSee) {
-            icons.add("must_see");
-        }
-
-        if (currentAttraction.heightRestriction) {
-            icons.add("height_restriction");
-        }
-
-        if (currentAttraction.singleRider) {
-            icons.add("single_rider");
-        }
-
-        LinearLayout iconLayout = (LinearLayout) findViewById(R.id.detail_iconLayout);
-
-        if (icons.size() > 0) {
-            for (int i = 0; i < icons.size(); i++) {
-                ImageView imageView = new ImageView(this);
-                imageView.setLayoutParams(new LinearLayout.LayoutParams(findViewById(R.id.detail_iconLayout).getHeight(), findViewById(R.id.detail_iconLayout).getHeight()));
-                imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                imageView.setPadding(10, 0, 10, 0);
-
-                String drawableName = "@drawable/" + icons.get(i);
-                int resourceID = this.getResources().getIdentifier(drawableName, null, this.getPackageName());
-                Drawable resource = this.getResources().getDrawable(resourceID);
-                imageView.setImageDrawable(resource);
-
-                iconLayout.addView(imageView);
-            }
-        } else {
-            ViewGroup.LayoutParams params = iconLayout.getLayoutParams();
-            params.height = 0;
-            iconLayout.setLayoutParams(params);
-        }
-    }
-
-    private void setupWaitTimes() {
-        HorizontalRecyclerHelper itemDecorator = new HorizontalRecyclerHelper(16);
-
-        recyclerView = (RecyclerView) findViewById(R.id.detail_waitTimesRecyclerView);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        recyclerView.addItemDecoration(itemDecorator);
-
-        TimeRowAdapter adapter = new TimeRowAdapter(this, currentPark, currentAttraction);
-        recyclerView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
-    }
-
-    private void createHeaderImage() {
-        final ImageView headerImageView = (ImageView) findViewById(R.id.detail_headerImageView);
-
-        DisplayImageOptions options = new DisplayImageOptions.Builder()
-                .cacheInMemory(true)
-                .cacheOnDisk(true)
-                .resetViewBeforeLoading(true)
-                .displayer(new FadeInBitmapDisplayer(500))
-                .showImageOnLoading(R.drawable.placeholder)
-                .build();
-
-        final ImageLoader imageLoader;
-        imageLoader = ImageLoader.getInstance();
-
-        imageLoader.displayImage(currentAttraction.attractionImage, headerImageView, options);
-    }
-
-    private void createMap() {
-        GoogleMap googleMap;
-        googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.detail_map)).getMap();
-        googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-        googleMap.getUiSettings().setScrollGesturesEnabled(false);
-
-        CameraPosition oldPos = googleMap.getCameraPosition();
-        CameraPosition pos = CameraPosition.builder(oldPos).bearing(currentPark.orientation).build();
-        googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(pos));
-
-        LatLng coordinate = new LatLng(currentAttraction.latitude, currentAttraction.longitude);
-        CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(coordinate, 17);
-        googleMap.animateCamera(yourLocation);
-
-//        Location locationA = new Location("point A");
-//        locationA.setLatitude(currentAttraction.latitude);
-//        locationA.setLongitude(currentAttraction.longitude);
-//
-//        Location locationB = new Location("point B");
-//        locationB.setLatitude(currentAttraction.latitude);
-//        locationB.setLongitude(currentAttraction.longitude);
-//
-//        float distance = locationA.distanceTo(locationB) ;
-
-        Marker attractionMarker = googleMap.addMarker(new MarkerOptions()
-                .position(new LatLng(currentAttraction.latitude, currentAttraction.longitude))
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.pin))
-                .title(currentAttraction.name)
-                .snippet("34 kilometer(s)"));
-
-        attractionMarker.showInfoWindow();
-    }
-
-    private void addFavourite(Button button) {
-        if (DataManager.fullFavouritesList.contains(currentAttraction.name)) {
-            DataManager.fullFavouritesList.remove(currentAttraction.name);
-            button.setBackgroundResource(R.drawable.star);
-        } else {
-            DataManager.fullFavouritesList.add(currentAttraction.name);
-            button.setBackgroundResource(R.drawable.star_filled);
-        }
-
-        ArrayHelper arrayHelper = new ArrayHelper(this);
-        arrayHelper.saveArray("favourites", DataManager.fullFavouritesList);
-    }
+    //endregion
 }

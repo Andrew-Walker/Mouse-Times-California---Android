@@ -9,7 +9,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.LinearLayout;
 
+/**
+ * Created by Andrew Walker on 14/01/2016.
+ */
 public class ParkSelect extends AppCompatActivity {
+    //region Lifecycle
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,7 +53,7 @@ public class ParkSelect extends AppCompatActivity {
             public void run() {
                 handler.postDelayed(this, 4000);
 
-                int disneylandParkPrevious = disneylandParkImages[index == 0 ? disneylandParkImages.length - 1: index - 1];
+                int disneylandParkPrevious = disneylandParkImages[index == 0 ? disneylandParkImages.length - 1 : index - 1];
                 int disneylandParkNext = disneylandParkImages[index];
 
                 final TransitionDrawable disneylandParkTransition = new TransitionDrawable(new Drawable[]{
@@ -58,7 +62,7 @@ public class ParkSelect extends AppCompatActivity {
                 });
                 disneylandParkButton.setBackgroundDrawable(disneylandParkTransition);
 
-                int californiaAdventurePrevious = californiaAdventureImages[index == 0 ? californiaAdventureImages.length - 1: index - 1];
+                int californiaAdventurePrevious = californiaAdventureImages[index == 0 ? californiaAdventureImages.length - 1 : index - 1];
                 int californiaAdventureNext = californiaAdventureImages[index];
 
                 final TransitionDrawable californiaAdventureTransition = new TransitionDrawable(new Drawable[]{
@@ -83,7 +87,9 @@ public class ParkSelect extends AppCompatActivity {
             AttractionsListFragment.attractionsAdapter.clearAdaptor();
         }
     }
+    //endregion
 
+    //region Actions
     public void openPark(View view) {
         String parkName = "Disneyland Park";
 
@@ -108,4 +114,5 @@ public class ParkSelect extends AppCompatActivity {
         intent.putExtra("parkPassed", parkSelected);
         startActivity(intent);
     }
+    //endregion
 }
