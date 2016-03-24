@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,4 +10,29 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="end"
+        android:orientation="vertical"
+        android:layout_marginRight="8dp"
+        android:layout_marginEnd="8dp">
+
+        <Button
+            android:id="@+id/mapFragment_resetButton"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:alpha="0.9"
+            android:background="@drawable/reset" />
+
+        <Button
+            android:id="@+id/mapFragment_locateButton"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:alpha="0.9"
+            android:background="@drawable/current" />
+    </LinearLayout>
 </FrameLayout>

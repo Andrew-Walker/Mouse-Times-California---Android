@@ -54,8 +54,8 @@ public class TimeRowAdapter extends RecyclerView.Adapter<TimeRowHolder> {
             public void onClick(View v) {
                 final int position = holder.getAdapterPosition();
 
-                final String timeSelected = timesArray[position];
-                String timeSelectedValid = timeSelected.replaceAll("[^\\d]", "");
+                final String rawTimeSelected = timesArray[position];
+                String timeSelectedValid = rawTimeSelected.replaceAll("[^\\d]", "");
 
                 if (position == 0) {
                     timeSelectedValid = "Closed";
@@ -71,7 +71,7 @@ public class TimeRowAdapter extends RecyclerView.Adapter<TimeRowHolder> {
                 alertDialogBuilder.setMessage("Are you sure you want to submit a time of " + timeSelectedValid + " minutes? Please only submit times that are accurate!");
                 alertDialogBuilder.setPositiveButton("I'm sure", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        DataManager.sendUpdateToParse(context, finalTimeSelected, currentPark, currentAttraction);
+                        DataManager.sendUpdateToParse(context, rawTimeSelected, finalTimeSelected, currentPark, currentAttraction);
                     }
                 });
                 alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

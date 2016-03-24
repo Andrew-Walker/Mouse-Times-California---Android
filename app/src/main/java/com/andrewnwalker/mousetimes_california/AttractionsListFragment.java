@@ -58,8 +58,9 @@ public class AttractionsListFragment extends Fragment implements SearchView.OnQu
 
         Fragment fragment = AttractionsListFragment.this;
 
+        this.getActivity().setTitle("Attractions");
+
         if (!hasContent) {
-            this.getActivity().setTitle("Attractions");
             progressCircle = (ProgressBar) this.getActivity().findViewById(R.id.attractionsListFragment_progressBar);
             errorLayout = (RelativeLayout) this.getActivity().findViewById(R.id.attractionsListFragment_errorLayout);
             errorTextView = (TextView) this.getActivity().findViewById(R.id.attractionsListFragment_errorTextView);

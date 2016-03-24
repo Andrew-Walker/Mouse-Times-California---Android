@@ -1,13 +1,17 @@
 package com.andrewnwalker.mousetimes_california;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -26,6 +30,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -50,8 +56,11 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by Andrew Walker on 14/01/2016.
  */
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private Park currentPark;
+    private GoogleMap googleMap;
+    private GoogleApiClient googleApiClient;
+    private Location currentLocation;
     private Attraction currentAttraction;
     private CountUpTimer timer;
     private long timerCount;
@@ -77,7 +86,6 @@ public class DetailActivity extends AppCompatActivity {
         currentAttraction = intent.getParcelableExtra("currentAttraction");
         currentPark = intent.getParcelableExtra("currentPark");
 
-        this.createMap();
         this.createHeaderImage();
         this.setupWaitTimes();
         this.setupIconLayout();
@@ -294,29 +302,6 @@ public class DetailActivity extends AppCompatActivity {
             imageLoader.displayImage(currentAttraction.attractionImage, headerImageView, options);
         }
     }
-
-    private void createMap() {
-        GoogleMap googleMap;
-        googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.detail_map)).getMap();
-        googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-        googleMap.getUiSettings().setScrollGesturesEnabled(false);
-
-        CameraPosition oldPos = googleMap.getCameraPosition();
-        CameraPosition pos = CameraPosition.builder(oldPos).bearing(currentPark.orientation).build();
-        googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(pos));
-
-        LatLng coordinate = new LatLng(currentAttraction.latitude, currentAttraction.longitude);
-        CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(coordinate, 17);
-        googleMap.animateCamera(yourLocation);
-
-        Marker attractionMarker = googleMap.addMarker(new MarkerOptions()
-                .position(new LatLng(currentAttraction.latitude, currentAttraction.longitude))
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.pin))
-                .title(currentAttraction.name)
-                .snippet("34 kilometer(s)"));
-
-        attractionMarker.showInfoWindow();
-    }
     //endregion
 
     //region Actions
@@ -357,7 +342,7 @@ public class DetailActivity extends AppCompatActivity {
         TextView waitTimeTextView = (TextView) findViewById(R.id.detail_waitTimeTextView);
         if (waitTimeTextView == null) return;
 
-        waitTimeTextView.setText(MTString.convertWaitTimeToDisplayWaitTime(waitTime));
+        waitTimeTextView.setText(waitTime);
 
         if (waitTime.equals("Closed") || waitTime.equals("Open")) {
             waitTimeTextView.setTextSize(18);
@@ -365,7 +350,7 @@ public class DetailActivity extends AppCompatActivity {
             waitTimeTextView.setTextSize(30);
         }
 
-        String drawableName = "@drawable/color" + waitTime.toLowerCase();
+        String drawableName = "@drawable/color" + waitTime.toLowerCase().replace("+", "");
         int resourceID = this.getResources().getIdentifier(drawableName, null, this.getPackageName());
         Drawable resource = this.getResources().getDrawable(resourceID);
         waitTimeTextView.setBackgroundDrawable(resource);
@@ -511,7 +496,7 @@ public class DetailActivity extends AppCompatActivity {
                     alertDialogBuilder.setMessage("Are you sure you want to submit a time of " + TimeUnit.MILLISECONDS.toMinutes(timerCount) + " minutes? Please only submit times that are accurate!");
                     alertDialogBuilder.setPositiveButton("I'm sure", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            DataManager.sendUpdateToParse(DetailActivity.this, reducedTimer.toString(), currentPark, currentAttraction);
+                            DataManager.sendUpdateToParse(DetailActivity.this, MTString.convertWaitTimeToDisplayWaitTime(reducedTimer.toString()), reducedTimer.toString(), currentPark, currentAttraction);
                         }
                     });
                     alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -559,4 +544,85 @@ public class DetailActivity extends AppCompatActivity {
         });
     }
     //endregion
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+        googleApiClient.connect();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (googleApiClient != null && googleApiClient.isConnected()) {
+            googleApiClient.disconnect();
+        }
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this,  Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            currentLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+        }
+
+        this.createMap();
+    }
+
+    private void createMap() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this,  Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.detail_map)).getMap();
+            googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+            googleMap.setMyLocationEnabled(true);
+            googleMap.getUiSettings().setScrollGesturesEnabled(false);
+            googleMap.getUiSettings().setMyLocationButtonEnabled(false);
+
+            CameraPosition oldPos = googleMap.getCameraPosition();
+            CameraPosition pos = CameraPosition.builder(oldPos).bearing(currentPark.orientation).build();
+            googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(pos));
+
+            LatLng coordinate = new LatLng(currentAttraction.latitude, currentAttraction.longitude);
+            CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(coordinate, 17);
+            googleMap.animateCamera(yourLocation);
+
+            Location locationA = new Location("A");
+            locationA.setLatitude(currentAttraction.latitude);
+            locationA.setLongitude(currentAttraction.longitude);
+
+            Location locationB = new Location("B");
+            locationB.setLatitude(currentLocation.getLatitude());
+            locationB.setLongitude(currentLocation.getLongitude());
+
+            Float distance = locationA.distanceTo(locationB) ;
+
+            String distanceAsString;
+            if (distance > 1000) {
+                distance = distance / 1000;
+                distanceAsString = distance.intValue() + " kilometers";
+            } else {
+                distanceAsString = distance.intValue() + " meters";
+            }
+
+            Marker attractionMarker = googleMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(currentAttraction.latitude, currentAttraction.longitude))
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.pin))
+                    .title(currentAttraction.name)
+                    .snippet("Distance - " + distanceAsString));
+
+            attractionMarker.showInfoWindow();
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+    }
+
+    @Override
+    public void onConnectionFailed(com.google.android.gms.common.ConnectionResult connectionResult) {
+    }
 }

@@ -7,7 +7,7 @@
 
     <string name="defaultWaitTime">0m</string>
     <string name="defaultAttractionName">Attraction Name</string>
-    <string name="defaultLastUpdated">Last Updated</string>
+    <string name="defaultLastUpdated">Last Refreshed</string>
     <string name="defaultTimer">00:00:00</string>
     <string name="defaultError">A connection error occurred.</string>
 
@@ -15,7 +15,7 @@
     <string name="openButton">Open</string>
     <string name="attractionStatusText">What is the current attraction status?</string>
     <string name="retryButton">Try Again</string>
-    <string name="lastUpdatedImageContentDescription">Last Updated Image</string>
+    <string name="lastUpdatedImageContentDescription">Last Refreshed Image</string>
     <string name="attractionImageContentDescription">Attraction Image</string>
     <string name="fastPassImageContentDescription">FastPass Availability</string>
     <string name="disneylandParkName">Disneyland Park</string>

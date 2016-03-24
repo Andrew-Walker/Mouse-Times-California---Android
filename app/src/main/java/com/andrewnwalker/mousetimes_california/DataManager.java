@@ -66,7 +66,7 @@ public class DataManager {
 
                         Attraction newAttraction = new Attraction(
                                 (String) object.get("Name"),
-                                (String) object.get("WaitTime"),
+                                MTString.convertWaitTimeToDisplayWaitTime((String) object.get("WaitTime")),
                                 (Double) object.get("Longitude"),
                                 (Double) object.get("Latitude"),
                                 new DateTime(update),
@@ -163,7 +163,7 @@ public class DataManager {
         return null;
     }
 
-    public static void sendUpdateToParse(final Context context, final String timeSelected, Park currentPark, Attraction currentAttraction) {
+    public static void sendUpdateToParse(final Context context, final String rawTimeSelected, final String timeSelected, Park currentPark, Attraction currentAttraction) {
         ParseQuery<ParseObject> query = ParseQuery.getQuery(currentPark.name.replaceAll("\\s+", ""));
         query.whereEqualTo("Name", currentAttraction.name);
         query.getFirstInBackground(new GetCallback<ParseObject>() {
@@ -172,7 +172,7 @@ public class DataManager {
                     Log.d("update", "The getFirst request failed.");
                 } else {
                     if (context instanceof DetailActivity) {
-                        ((DetailActivity) context).setWaitTime(timeSelected);
+                        ((DetailActivity) context).setWaitTime(rawTimeSelected);
                     }
 
                     object.put("WaitTime", timeSelected);

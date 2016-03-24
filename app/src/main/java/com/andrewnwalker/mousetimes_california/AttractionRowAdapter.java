@@ -64,7 +64,7 @@ public class AttractionRowAdapter extends RecyclerView.Adapter<AttractionRowHold
         int focusedItem = 0;
         ImageLoader imageLoader = ImageLoader.getInstance();
 
-        String drawableName = "@drawable/color" + currentAttraction.waitTime.toLowerCase();
+        String drawableName = "@drawable/color" + currentAttraction.waitTime.toLowerCase().replace("+", "");
         int resourceID = context.getResources().getIdentifier(drawableName, null, context.getPackageName());
         Drawable resource = context.getResources().getDrawable(resourceID);
         attractionRowHolder.waitTimeTextView.setBackgroundDrawable(resource);
@@ -105,7 +105,7 @@ public class AttractionRowAdapter extends RecyclerView.Adapter<AttractionRowHold
             attractionRowHolder.waitTimeTextView.setTextSize(17);
         }
 
-        attractionRowHolder.waitTimeTextView.setText(MTString.convertWaitTimeToDisplayWaitTime(currentAttraction.waitTime));
+        attractionRowHolder.waitTimeTextView.setText(currentAttraction.waitTime);
     }
 
     public void clearAdaptor() {

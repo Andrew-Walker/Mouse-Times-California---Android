@@ -29,9 +29,9 @@ public class MainActivity extends AppCompatActivity {
 
         BottomBar bottomBar = BottomBar.attach(this, savedInstanceState);
         bottomBar.setFragmentItems(getSupportFragmentManager(), R.id.attractionsList_mainLayout,
-                new BottomBarFragment(new AttractionsListFragment(), R.drawable.clock, "Attractions"),
-                new BottomBarFragment(new ParkMapFragment(), R.drawable.map, "Map"),
-                new BottomBarFragment(new FavouritesListFragment(), R.drawable.map, "Favourites")
+                new BottomBarFragment(new AttractionsListFragment(), R.drawable.ic_access_time_white_24dp, "Attractions"),
+                new BottomBarFragment(new ParkMapFragment(), R.drawable.ic_explore_white_24dp, "Map"),
+                new BottomBarFragment(new FavouritesListFragment(), R.drawable.ic_grade_white_24dp, "Favourites")
         );
     }
 
