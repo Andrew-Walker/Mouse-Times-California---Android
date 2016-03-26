@@ -572,19 +572,22 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
     }
 
     private void createMap() {
+        googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.detail_map)).getMap();
+        googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+        googleMap.getUiSettings().setScrollGesturesEnabled(false);
+        googleMap.getUiSettings().setMyLocationButtonEnabled(false);
+
+        CameraPosition newPosition = new CameraPosition.Builder().target(new LatLng(currentAttraction.latitude, currentAttraction.longitude))
+                .zoom(17)
+                .bearing(currentPark.orientation)
+                .build();
+
+        googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(newPosition));
+
+        Marker attractionMarker;
+
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this,  Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.detail_map)).getMap();
-            googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
             googleMap.setMyLocationEnabled(true);
-            googleMap.getUiSettings().setScrollGesturesEnabled(false);
-            googleMap.getUiSettings().setMyLocationButtonEnabled(false);
-
-            CameraPosition newPosition = new CameraPosition.Builder().target(new LatLng(currentAttraction.latitude, currentAttraction.longitude))
-                    .zoom(17)
-                    .bearing(currentPark.orientation)
-                    .build();
-
-            googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(newPosition));
 
             Location locationA = new Location("A");
             locationA.setLatitude(currentAttraction.latitude);
@@ -604,14 +607,19 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
                 distanceAsString = distance.intValue() + " meters";
             }
 
-            Marker attractionMarker = googleMap.addMarker(new MarkerOptions()
+            attractionMarker = googleMap.addMarker(new MarkerOptions()
                     .position(new LatLng(currentAttraction.latitude, currentAttraction.longitude))
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.pin))
                     .title(currentAttraction.name)
                     .snippet("Distance - " + distanceAsString));
-
-            attractionMarker.showInfoWindow();
+        } else {
+            attractionMarker = googleMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(currentAttraction.latitude, currentAttraction.longitude))
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.pin))
+                    .title(currentAttraction.name));
         }
+
+        attractionMarker.showInfoWindow();
     }
 
     @Override
