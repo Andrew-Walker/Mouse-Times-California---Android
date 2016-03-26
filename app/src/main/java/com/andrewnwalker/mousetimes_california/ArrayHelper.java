@@ -33,13 +33,17 @@ public class ArrayHelper {
     ArrayList<String> getArray(String key) {
         ArrayList<String> array = new ArrayList<>();
         String jArrayString = prefs.getString(key, "NOPREFSAVED");
-        if (jArrayString.matches("NOPREFSAVED")) return getDefaultArray();
-        else {
+
+        if (jArrayString.matches("NOPREFSAVED")) {
+            return getDefaultArray();
+        } else {
             try {
                 JSONArray jArray = new JSONArray(jArrayString);
+
                 for (int i = 0; i < jArray.length(); i++) {
                     array.add(jArray.getString(i));
                 }
+
                 return array;
             } catch (JSONException e) {
                 return getDefaultArray();

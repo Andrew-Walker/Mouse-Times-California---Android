@@ -91,7 +91,7 @@
                         android:gravity="bottom"
                         android:text="@string/defaultLastUpdated"
                         android:textColor="#7F7F7F"
-                        android:textSize="16sp" />
+                        android:textSize="18sp" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -155,13 +155,9 @@
                     android:layout_height="match_parent"
                     android:layout_marginLeft="8dp"
                     android:layout_marginStart="8dp"
-                    android:elevation="0dp"
-                    app:cardCornerRadius="7dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="#545454">
+                    app:elevation="0dp"
+                    app:cardCornerRadius="7dp"
+                    app:cardBackgroundColor="#545454">
 
                         <Button
                             android:id="@+id/detail_startTimer"
@@ -174,7 +170,6 @@
                             android:textAllCaps="false"
                             android:textColor="#FFFFFF"
                             android:textSize="15sp" />
-                    </LinearLayout>
                 </android.support.v7.widget.CardView>
 
                 <android.support.v7.widget.CardView

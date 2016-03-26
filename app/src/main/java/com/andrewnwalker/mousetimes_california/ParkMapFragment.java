@@ -10,6 +10,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -21,6 +24,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.maps.android.clustering.ClusterManager;
 
 /**
@@ -28,10 +32,10 @@ import com.google.maps.android.clustering.ClusterManager;
  */
 public class ParkMapFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     public static Park parkPassed;
+    public static Location currentLocation;
+    public static ClusterManager<AttractionMarker> clusterManager;
     private GoogleApiClient googleApiClient;
-    private Location currentLocation;
     private GoogleMap googleMap;
-    private ClusterManager<AttractionMarker> mClusterManager;
     private Button resetButton;
     private Button locateButton;
 
@@ -39,10 +43,13 @@ public class ParkMapFragment extends Fragment implements GoogleApiClient.Connect
         // Required empty public constructor
     }
 
+    //region Lifecycle
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final Intent intent = this.getActivity().getIntent();
         parkPassed = intent.getParcelableExtra("parkPassed");
+
+        setHasOptionsMenu(true);
 
         return inflater.inflate(R.layout.fragment_map, container, false);
     }
@@ -71,11 +78,66 @@ public class ParkMapFragment extends Fragment implements GoogleApiClient.Connect
     @Override
     public void onStop() {
         super.onStop();
+
         if (googleApiClient != null && googleApiClient.isConnected()) {
             googleApiClient.disconnect();
         }
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        clusterManager.clearItems();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFragment_fullParkMap);
+        if (mapFragment != null) {
+            getFragmentManager().beginTransaction().remove(mapFragment).commit();
+        }
+    }
+    //endregion
+
+    //region Options Menu
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.map_type_selection, menu);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.mapTypeNormal:
+                googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+                break;
+            case R.id.mapTypeSatellite:
+                googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+
+                break;
+            case R.id.mapTypeTerrain:
+                googleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+
+                break;
+            case R.id.mapTypeHybrid:
+                googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+
+                break;
+            default:
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+    //endregion
+
+    //region Map Callbacks
     @Override
     public void onConnected(Bundle bundle) {
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(getActivity(),  Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -86,12 +148,15 @@ public class ParkMapFragment extends Fragment implements GoogleApiClient.Connect
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-
-        mClusterManager.clearItems();
+    public void onConnectionSuspended(int i) {
     }
 
+    @Override
+    public void onConnectionFailed(com.google.android.gms.common.ConnectionResult connectionResult) {
+    }
+    //endregion
+
+    //region Map setup
     private void createMap() {
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(getActivity(),  Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             googleMap = getMapFragment().getMap();
@@ -99,17 +164,28 @@ public class ParkMapFragment extends Fragment implements GoogleApiClient.Connect
             googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
             googleMap.setMyLocationEnabled(true);
             googleMap.getUiSettings().setMyLocationButtonEnabled(false);
+            googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                @Override
+                public void onInfoWindowClick(Marker marker) {
+                    Attraction tappedAttraction = DataManager.findAttractionByName(marker.getTitle());
+
+                    Intent intent = new Intent(getContext(), DetailActivity.class);
+                    intent.putExtra("currentAttraction", tappedAttraction);
+                    intent.putExtra("currentPark", AttractionsListFragment.parkPassed);
+                    startActivity(intent);
+                }
+            });
 
             this.setMapToDefault(false);
         }
     }
 
     private void setUpClusterer() {
-        mClusterManager = new ClusterManager<>(getActivity(), googleMap);
-        mClusterManager.setRenderer(new CustomClusterRenderer(getActivity(), googleMap, mClusterManager));
+        clusterManager = new ClusterManager<>(getActivity(), googleMap);
+        clusterManager.setRenderer(new CustomClusterRenderer(getActivity(), googleMap, clusterManager));
 
-        googleMap.setOnCameraChangeListener(mClusterManager);
-        googleMap.setOnMarkerClickListener(mClusterManager);
+        googleMap.setOnCameraChangeListener(clusterManager);
+        googleMap.setOnMarkerClickListener(clusterManager);
     }
 
     private void setMapToDefault(Boolean animated) {
@@ -157,30 +233,20 @@ public class ParkMapFragment extends Fragment implements GoogleApiClient.Connect
             }
 
             AttractionMarker attractionMarker = new AttractionMarker(attraction.latitude, attraction.longitude, attraction.name, "Wait time - " + attraction.waitTime + " | Distance - " + distanceAsString);
-            mClusterManager.addItem(attractionMarker);
+            clusterManager.addItem(attractionMarker);
         }
     }
 
     private SupportMapFragment getMapFragment() {
-        FragmentManager fm = null;
+        FragmentManager fragmentManager = null;
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            fm = getActivity().getSupportFragmentManager();
+            fragmentManager = getActivity().getSupportFragmentManager();
         } else {
-            fm = getChildFragmentManager();
+            fragmentManager = getChildFragmentManager();
         }
 
-        return (SupportMapFragment) fm.findFragmentById(R.id.mapFragment_fullParkMap);
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-
-        SupportMapFragment mapFragment = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFragment_fullParkMap);
-        if (mapFragment != null) {
-            getFragmentManager().beginTransaction().remove(mapFragment).commit();
-        }
+        return (SupportMapFragment) fragmentManager.findFragmentById(R.id.mapFragment_fullParkMap);
     }
 
     private void addResetListener() {
@@ -200,12 +266,5 @@ public class ParkMapFragment extends Fragment implements GoogleApiClient.Connect
             }
         });
     }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-    }
-
-    @Override
-    public void onConnectionFailed(com.google.android.gms.common.ConnectionResult connectionResult) {
-    }
+    //endregion
 }

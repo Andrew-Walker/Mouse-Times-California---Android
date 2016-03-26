@@ -57,4 +57,9 @@
             android:textAllCaps="false"
             android:textColor="@color/colorPrimary" />
     </RelativeLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent" />
 </FrameLayout>

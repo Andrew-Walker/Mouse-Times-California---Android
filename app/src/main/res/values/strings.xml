@@ -31,4 +31,5 @@
     <string name="confirmTimer">✓</string>
     <string name="aboutAttractionText">About the attraction</string>
     <string name="defaultAttractionDescription">Space Mountain is the name of a space-themed indoor roller coaster attraction located at all five Magic Kingdom-style Disney Parks. Although all five versions of the attraction are different in nature, all have a similar domed exterior façade that is a landmark for the respective park. The first Space Mountain ride opened in 1975 at Walt Disney World Resort in Florida, and similar attractions were then eventually built at the other Disney parks.</string>
+    <string name="title_activity_maps">Map</string>
 </resources>

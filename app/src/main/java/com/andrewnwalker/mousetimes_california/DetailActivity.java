@@ -32,7 +32,6 @@ import android.widget.TextView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -77,8 +76,6 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-
-        if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
@@ -582,13 +579,12 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
             googleMap.getUiSettings().setScrollGesturesEnabled(false);
             googleMap.getUiSettings().setMyLocationButtonEnabled(false);
 
-            CameraPosition oldPos = googleMap.getCameraPosition();
-            CameraPosition pos = CameraPosition.builder(oldPos).bearing(currentPark.orientation).build();
-            googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(pos));
+            CameraPosition newPosition = new CameraPosition.Builder().target(new LatLng(currentAttraction.latitude, currentAttraction.longitude))
+                    .zoom(17)
+                    .bearing(currentPark.orientation)
+                    .build();
 
-            LatLng coordinate = new LatLng(currentAttraction.latitude, currentAttraction.longitude);
-            CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(coordinate, 17);
-            googleMap.animateCamera(yourLocation);
+            googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(newPosition));
 
             Location locationA = new Location("A");
             locationA.setLatitude(currentAttraction.latitude);
