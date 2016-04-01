@@ -28,12 +28,6 @@ public abstract class CountUpTimer {
         handler.removeMessages(MSG);
     }
 
-    public void reset() {
-        synchronized (this) {
-            base = SystemClock.elapsedRealtime();
-        }
-    }
-
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {

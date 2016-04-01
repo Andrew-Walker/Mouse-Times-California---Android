@@ -60,7 +60,7 @@ public class AttractionRowAdapter extends RecyclerView.Adapter<AttractionRowHold
 
     @Override
     public void onBindViewHolder(final AttractionRowHolder attractionRowHolder, int position) {
-        Attraction currentAttraction = attractionsList.get(position);
+        Attraction currentAttraction = this.attractionsList.get(position);
         int focusedItem = 0;
         ImageLoader imageLoader = ImageLoader.getInstance();
 
@@ -109,19 +109,19 @@ public class AttractionRowAdapter extends RecyclerView.Adapter<AttractionRowHold
     }
 
     public void clearAdaptor() {
-        attractionsList.clear();
+        this.attractionsList.clear();
 
         notifyDataSetChanged();
     }
 
     @Override
     public int getItemCount() {
-        return (null != attractionsList ? attractionsList.size() : 0);
+        return (null != this.attractionsList ? this.attractionsList.size() : 0);
     }
 
     public void setFilter(List<Attraction> attractions) {
-        attractionsList.clear();
-        attractionsList.addAll(attractions);
+        this.attractionsList.clear();
+        this.attractionsList.addAll(attractions);
 
         notifyDataSetChanged();
     }

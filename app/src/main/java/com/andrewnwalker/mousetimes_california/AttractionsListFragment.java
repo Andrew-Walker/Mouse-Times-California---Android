@@ -47,7 +47,7 @@ public class AttractionsListFragment extends Fragment implements SearchView.OnQu
     //region Lifecycle
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        this.setHasOptionsMenu(true);
+        setHasOptionsMenu(true);
 
         return inflater.inflate(R.layout.fragment_attractions_list, container, false);
     }
@@ -58,20 +58,20 @@ public class AttractionsListFragment extends Fragment implements SearchView.OnQu
 
         Fragment fragment = AttractionsListFragment.this;
 
-        this.getActivity().setTitle("Attractions");
+        getActivity().setTitle("Attractions");
 
         if (!hasContent) {
-            progressCircle = (ProgressBar) this.getActivity().findViewById(R.id.attractionsListFragment_progressBar);
-            errorLayout = (RelativeLayout) this.getActivity().findViewById(R.id.attractionsListFragment_errorLayout);
-            errorTextView = (TextView) this.getActivity().findViewById(R.id.attractionsListFragment_errorTextView);
+            progressCircle = (ProgressBar) getActivity().findViewById(R.id.attractionsListFragment_progressBar);
+            errorLayout = (RelativeLayout) getActivity().findViewById(R.id.attractionsListFragment_errorLayout);
+            errorTextView = (TextView) getActivity().findViewById(R.id.attractionsListFragment_errorTextView);
 
-            final Intent intent = this.getActivity().getIntent();
+            final Intent intent = getActivity().getIntent();
             parkPassed = intent.getParcelableExtra("parkPassed");
 
-            this.attractionsList = DataManager.loadAttractions(this.getActivity().getBaseContext(), fragment, parkPassed.name.replaceAll("\\s+", ""));
+            attractionsList = DataManager.loadAttractions(getActivity().getBaseContext(), fragment, parkPassed.name.replaceAll("\\s+", ""));
         }
 
-        pullToRefreshLayout = (SwipeRefreshLayout) this.getActivity().findViewById(R.id.contentMain_swipeContainer);
+        pullToRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.contentMain_swipeContainer);
         pullToRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -80,14 +80,14 @@ public class AttractionsListFragment extends Fragment implements SearchView.OnQu
         });
         pullToRefreshLayout.setColorSchemeColors(Color.parseColor("#FF2F92"), Color.parseColor("#0080FF"));
 
-        this.setupImageLoader();
-        this.addRetryListener();
-        this.setupRecycler();
+        setupImageLoader();
+        addRetryListener();
+        setupRecycler();
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        this.getActivity().getMenuInflater().inflate(R.menu.main_action_search, menu);
+        getActivity().getMenuInflater().inflate(R.menu.main_action_search, menu);
 
         final MenuItem item = menu.findItem(R.id.actionSearch);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
@@ -142,11 +142,11 @@ public class AttractionsListFragment extends Fragment implements SearchView.OnQu
     private void setupRecycler() {
         RecyclerView attractionsRecycler;
 
-        attractionsRecycler = (RecyclerView) this.getActivity().findViewById(R.id.contentMain_attractionsRecycler);
-        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getActivity());
+        attractionsRecycler = (RecyclerView) getActivity().findViewById(R.id.contentMain_attractionsRecycler);
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         attractionsRecycler.setLayoutManager(linearLayoutManager);
 
-        attractionsAdapter = new AttractionRowAdapter(this.getActivity(), AttractionsListFragment.this, DataManager.globalAttractionsList);
+        attractionsAdapter = new AttractionRowAdapter(getActivity(), AttractionsListFragment.this, DataManager.globalAttractionsList);
         attractionsRecycler.setAdapter(attractionsAdapter);
     }
 
@@ -156,7 +156,7 @@ public class AttractionsListFragment extends Fragment implements SearchView.OnQu
                 .cacheOnDisk(true)
                 .build();
 
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this.getActivity().getApplicationContext())
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getActivity().getApplicationContext())
                 .defaultDisplayImageOptions(defaultOptions)
                 .build();
 
@@ -164,7 +164,7 @@ public class AttractionsListFragment extends Fragment implements SearchView.OnQu
     }
 
     private void addRetryListener() {
-        final Button retryButton = (Button) this.getActivity().findViewById(R.id.attractionsListFragment_retryButton);
+        final Button retryButton = (Button) getActivity().findViewById(R.id.attractionsListFragment_retryButton);
         retryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {

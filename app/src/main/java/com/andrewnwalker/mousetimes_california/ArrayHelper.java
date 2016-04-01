@@ -19,20 +19,21 @@ public class ArrayHelper {
 
     public ArrayHelper(Context context) {
         this.context = context;
-        prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        editor = prefs.edit();
+        this.prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        this.editor = this.prefs.edit();
     }
 
     public void saveArray(String key, ArrayList<String> array) {
         JSONArray jArray = new JSONArray(array);
-        editor.remove(key);
-        editor.putString(key, jArray.toString());
-        editor.commit();
+
+        this.editor.remove(key);
+        this.editor.putString(key, jArray.toString());
+        this.editor.commit();
     }
 
     ArrayList<String> getArray(String key) {
         ArrayList<String> array = new ArrayList<>();
-        String jArrayString = prefs.getString(key, "NOPREFSAVED");
+        String jArrayString = this.prefs.getString(key, "NOPREFSAVED");
 
         if (jArrayString.matches("NOPREFSAVED")) {
             return getDefaultArray();

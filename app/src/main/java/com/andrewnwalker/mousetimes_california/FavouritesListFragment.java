@@ -42,18 +42,18 @@ public class FavouritesListFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        this.getActivity().setTitle("Favourites");
-        this.setupRecycler();
-        this.setupImageLoader();
+        getActivity().setTitle("Favourites");
+        setupRecycler();
+        setupImageLoader();
 
-        backgroundLayout = (TextView) this.getActivity().findViewById(R.id.favouritesListFragment_defaultText);
+        backgroundLayout = (TextView) getActivity().findViewById(R.id.favouritesListFragment_defaultText);
 
         findFavourites();
 
-        final Intent intent = this.getActivity().getIntent();
+        final Intent intent = getActivity().getIntent();
         parkPassed = intent.getParcelableExtra("parkPassed");
 
-        pullToRefreshLayout = (SwipeRefreshLayout) this.getActivity().findViewById(R.id.contentMain_swipeContainer);
+        pullToRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.contentMain_swipeContainer);
         pullToRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -68,11 +68,11 @@ public class FavouritesListFragment extends Fragment {
 
     //region Private methods
     private void setupRecycler() {
-        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getActivity());
-        RecyclerView attractionsRecycler = (RecyclerView) this.getActivity().findViewById(R.id.contentMain_attractionsRecycler);
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        RecyclerView attractionsRecycler = (RecyclerView) getActivity().findViewById(R.id.contentMain_attractionsRecycler);
         attractionsRecycler.setLayoutManager(linearLayoutManager);
 
-        attractionsAdapter = new AttractionRowAdapter(this.getActivity(), FavouritesListFragment.this, DataManager.currentFavouritesList);
+        attractionsAdapter = new AttractionRowAdapter(getActivity(), FavouritesListFragment.this, DataManager.currentFavouritesList);
         attractionsRecycler.setAdapter(attractionsAdapter);
     }
 
@@ -82,7 +82,7 @@ public class FavouritesListFragment extends Fragment {
                 .cacheOnDisk(true)
                 .build();
 
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this.getActivity().getApplicationContext())
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getActivity().getApplicationContext())
                 .defaultDisplayImageOptions(defaultOptions)
                 .build();
 

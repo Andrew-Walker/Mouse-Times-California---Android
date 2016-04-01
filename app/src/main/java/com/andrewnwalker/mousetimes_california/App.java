@@ -9,12 +9,12 @@ import com.parse.Parse;
  * Created by Andrew Walker on 22/01/2016.
  */
 public class App extends Application {
-    private static Context mContext;
+    private static Context context;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mContext = this;
+        context = this;
 
         ArrayHelper arrayHelper = new ArrayHelper(this);
         DataManager.fullFavouritesList = arrayHelper.getArray("favourites");
@@ -24,6 +24,6 @@ public class App extends Application {
     }
 
     public static Context getContext() {
-        return mContext;
+        return context;
     }
 }

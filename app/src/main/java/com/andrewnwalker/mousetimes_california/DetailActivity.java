@@ -83,18 +83,18 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
         currentAttraction = intent.getParcelableExtra("currentAttraction");
         currentPark = intent.getParcelableExtra("currentPark");
 
-        this.createHeaderImage();
-        this.setupWaitTimes();
-        this.setupIconLayout();
-        this.setupTimer();
-        this.getLayoutItems();
+        createHeaderImage();
+        setupWaitTimes();
+        setupIconLayout();
+        setupTimer();
+        getLayoutItems();
 
-        this.detectLayoutCompletion();
+        detectLayoutCompletion();
 
-        this.addFavouritesListener();
-        this.addTimerListener();
-        this.addEndTimerListener();
-        this.addConfirmTimerListener();
+        addFavouritesListener();
+        addTimerListener();
+        addEndTimerListener();
+        addConfirmTimerListener();
     }
 
     @Override
@@ -223,25 +223,11 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
     private void setupIconLayout() {
         ArrayList<String> icons = new ArrayList<>();
 
-        if (currentAttraction.disabledAccess) {
-            icons.add("disabled_access");
-        }
-
-        if (currentAttraction.fastPass) {
-            icons.add("fast_pass");
-        }
-
-        if (currentAttraction.mustSee) {
-            icons.add("must_see");
-        }
-
-        if (currentAttraction.heightRestriction) {
-            icons.add("height_restriction");
-        }
-
-        if (currentAttraction.singleRider) {
-            icons.add("single_rider");
-        }
+        if (currentAttraction.disabledAccess) icons.add("disabled_access");
+        if (currentAttraction.fastPass) icons.add("fast_pass");
+        if (currentAttraction.mustSee) icons.add("must_see");
+        if (currentAttraction.heightRestriction) icons.add("height_restriction");
+        if (currentAttraction.singleRider) icons.add("single_rider");
 
         LinearLayout iconLayout = (LinearLayout) findViewById(R.id.detail_iconLayout);
         if (iconLayout != null) {
@@ -253,8 +239,8 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
                     imageView.setPadding(10, 0, 10, 0);
 
                     String drawableName = "@drawable/" + icons.get(i);
-                    int resourceID = this.getResources().getIdentifier(drawableName, null, this.getPackageName());
-                    Drawable resource = this.getResources().getDrawable(resourceID);
+                    int resourceID = getResources().getIdentifier(drawableName, null, getPackageName());
+                    Drawable resource = getResources().getDrawable(resourceID);
                     imageView.setImageDrawable(resource);
 
                     iconLayout.addView(imageView);
@@ -348,8 +334,8 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
         }
 
         String drawableName = "@drawable/color" + waitTime.toLowerCase().replace("+", "");
-        int resourceID = this.getResources().getIdentifier(drawableName, null, this.getPackageName());
-        Drawable resource = this.getResources().getDrawable(resourceID);
+        int resourceID = getResources().getIdentifier(drawableName, null, getPackageName());
+        Drawable resource = getResources().getDrawable(resourceID);
         waitTimeTextView.setBackgroundDrawable(resource);
     }
     //endregion
@@ -557,9 +543,8 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
     @Override
     public void onStop() {
         super.onStop();
-        if (googleApiClient != null && googleApiClient.isConnected()) {
-            googleApiClient.disconnect();
-        }
+        
+        if (googleApiClient != null && googleApiClient.isConnected()) googleApiClient.disconnect();
     }
 
     @Override
@@ -568,7 +553,7 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
             currentLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
         }
 
-        this.createMap();
+        createMap();
     }
 
     private void createMap() {

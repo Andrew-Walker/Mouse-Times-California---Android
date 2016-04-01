@@ -46,7 +46,7 @@ public class ParkMapFragment extends Fragment implements GoogleApiClient.Connect
     //region Lifecycle
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final Intent intent = this.getActivity().getIntent();
+        final Intent intent = getActivity().getIntent();
         parkPassed = intent.getParcelableExtra("parkPassed");
 
         setHasOptionsMenu(true);
@@ -68,11 +68,11 @@ public class ParkMapFragment extends Fragment implements GoogleApiClient.Connect
         resetButton = (Button) getActivity().findViewById(R.id.mapFragment_resetButton);
         locateButton = (Button) getActivity().findViewById(R.id.mapFragment_locateButton);
 
-        this.getActivity().setTitle("Map");
-        this.createMap();
-        this.setUpClusterer();
-        this.addResetListener();
-        this.addLocateListener();
+        getActivity().setTitle("Map");
+        createMap();
+        setUpClusterer();
+        addResetListener();
+        addLocateListener();
     }
 
     @Override
@@ -142,9 +142,9 @@ public class ParkMapFragment extends Fragment implements GoogleApiClient.Connect
     public void onConnected(Bundle bundle) {
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(getActivity(),  Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             currentLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-
-            addItems();
         }
+
+        addItems();
     }
 
     @Override
@@ -158,25 +158,26 @@ public class ParkMapFragment extends Fragment implements GoogleApiClient.Connect
 
     //region Map setup
     private void createMap() {
+        googleMap = getMapFragment().getMap();
+        googleMap.getUiSettings().setZoomControlsEnabled(true);
+        googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+        googleMap.getUiSettings().setMyLocationButtonEnabled(false);
+        googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                Attraction tappedAttraction = DataManager.findAttractionByName(marker.getTitle());
+
+                Intent intent = new Intent(getContext(), DetailActivity.class);
+                intent.putExtra("currentAttraction", tappedAttraction);
+                intent.putExtra("currentPark", AttractionsListFragment.parkPassed);
+                startActivity(intent);
+            }
+        });
+
+        setMapToDefault(false);
+
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(getActivity(),  Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            googleMap = getMapFragment().getMap();
-            googleMap.getUiSettings().setZoomControlsEnabled(true);
-            googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
             googleMap.setMyLocationEnabled(true);
-            googleMap.getUiSettings().setMyLocationButtonEnabled(false);
-            googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                @Override
-                public void onInfoWindowClick(Marker marker) {
-                    Attraction tappedAttraction = DataManager.findAttractionByName(marker.getTitle());
-
-                    Intent intent = new Intent(getContext(), DetailActivity.class);
-                    intent.putExtra("currentAttraction", tappedAttraction);
-                    intent.putExtra("currentPark", AttractionsListFragment.parkPassed);
-                    startActivity(intent);
-                }
-            });
-
-            this.setMapToDefault(false);
         }
     }
 
@@ -214,26 +215,31 @@ public class ParkMapFragment extends Fragment implements GoogleApiClient.Connect
         for (int i = 0; i < DataManager.globalAttractionsList.size(); i++) {
             Attraction attraction = DataManager.globalAttractionsList.get(i);
 
-            Location locationA = new Location("A");
-            locationA.setLatitude(attraction.latitude);
-            locationA.setLongitude(attraction.longitude);
+            if (currentLocation != null) {
+                Location locationA = new Location("A");
+                locationA.setLatitude(attraction.latitude);
+                locationA.setLongitude(attraction.longitude);
 
-            Location locationB = new Location("B");
-            locationB.setLatitude(currentLocation.getLatitude());
-            locationB.setLongitude(currentLocation.getLongitude());
+                Location locationB = new Location("B");
+                locationB.setLatitude(currentLocation.getLatitude());
+                locationB.setLongitude(currentLocation.getLongitude());
 
-            Float distance = locationA.distanceTo(locationB) ;
+                Float distance = locationA.distanceTo(locationB) ;
 
-            String distanceAsString;
-            if (distance > 1000) {
-                distance = distance / 1000;
-                distanceAsString = distance.intValue() + " kilometers";
+                String distanceAsString;
+                if (distance > 1000) {
+                    distance = distance / 1000;
+                    distanceAsString = distance.intValue() + " kilometers";
+                } else {
+                    distanceAsString = distance.intValue() + " meters";
+                }
+
+                AttractionMarker attractionMarker = new AttractionMarker(attraction.latitude, attraction.longitude, attraction.name, "Wait time - " + attraction.waitTime + " | Distance - " + distanceAsString);
+                clusterManager.addItem(attractionMarker);
             } else {
-                distanceAsString = distance.intValue() + " meters";
+                AttractionMarker attractionMarker = new AttractionMarker(attraction.latitude, attraction.longitude, attraction.name, "Wait time - " + attraction.waitTime + " | Distance - Unknown");
+                clusterManager.addItem(attractionMarker);
             }
-
-            AttractionMarker attractionMarker = new AttractionMarker(attraction.latitude, attraction.longitude, attraction.name, "Wait time - " + attraction.waitTime + " | Distance - " + distanceAsString);
-            clusterManager.addItem(attractionMarker);
         }
     }
 
